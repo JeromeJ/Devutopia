@@ -1,0 +1,6 @@
+en Hello world
+fr Bonjour tout le monde
+jp みなさんこんにちは
+it Ciao a tutti
+es Hola a todos
+eo Saluton ĉiuj

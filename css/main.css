@@ -1,0 +1,75 @@
+html, body { height: 100% }
+
+body { margin: 8px } /* Default Firefox value */
+#foot { margin-left: -8px } /* Negate it! */
+
+#foot {
+	background-color: white;
+	/*position: fixed;
+	bottom: 0;
+	width: 100%;*/
+	border-top: 1.5px solid black;
+}
+
+#status {
+	float: left;
+	line-height: 2
+}
+.WIP { color: red }
+
+#title {
+	font-size: 3em;
+	font-style: italic;
+	text-align: center;
+}
+
+#descript, #extra { text-align: center }
+#extra { float: right }
+
+.clear { clear: both }
+
+#main{ width: 100%;}
+
+#main > tbody > tr { vertical-align: top }
+#mainContent { width: 50%; }
+
+#helloWorld { margin-bottom: 1em }
+
+#test { display: block }
+
+#about { }
+#about h1 { padding-left: .5em; }
+#moto li { font-size: 1.5em; padding-bottom: .5em }
+#about p { padding-left: 1em }
+
+#source { float: right }
+
+.lang { font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif; }
+
+.heart { color: red }
+.love { font-style: italic }
+
+
+
+#leftContainer{
+	width: 50%;
+	float: left;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+#rightContainer{
+	border-left: 1.5px solid black;
+	width: 50%;
+	float: right;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding-left: .3em;
+}
+
+@media (max-width: 1000px){
+	#leftContainer, #rightContainer{
+		float: none;
+		width: 100%;
+		border: none;
+	}
+}
