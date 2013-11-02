@@ -2,25 +2,28 @@
 # -*- coding: utf-8 -*-
 
 import string
+import re
 
 
 class BetterFormat(string.Formatter):
+	"""
+	Introduce better formattings
 
-	""" Introduce better formattings
-
-			Currently, it allows to automatically indent a block of text according to its current depth of identation.
+	Currently, it allows to automatically indent a block of text according to its current depth of identation.
 	"""
 
 	def parse(self, format_string):
 		""" Receive the raw string and split its elements apart to facilitate the actual replacing """
 
 		return [(
-					before,
-					identifiant,
-					str(len(re.search('\t*$', before).group(0))) +
-						'\t' +
-						(param if param is not None else ''),
-				 	modif,
+				before,
+				identifiant,
+				str(
+					len(
+						re.search('\t*$', before).group(0)
+					)
+				) + '\t' + (param if param is not None else ''),
+				modif,
 				)
 				for before, identifiant, param, modif
 				in super().parse(format_string)]
@@ -38,7 +41,7 @@ class BetterFormat(string.Formatter):
 
 		pattern = re.sub('[0-9]+\t', extractTabs, pattern)
 
-		if sharedData['numberOfTabs']: # If there are tabs to be added
+		if sharedData['numberOfTabs']:  # If there are tabs to be added
 			v = (sharedData['numberOfTabs'] * '\t').join(v.splitlines(True))
-		
+
 		return super().format_field(v, pattern)

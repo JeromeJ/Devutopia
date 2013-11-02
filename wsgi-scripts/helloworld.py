@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" This script is the starting of a, hopefully, huge collaborative platform.
+"""
+This script is the starting of a, hopefully, huge collaborative platform.
 
 Everything will be user-collaborative-able, everyone will be able to add content.
 And every content will automatically accepted and stored in the "Content by users" tab (the name might differ).
@@ -11,7 +12,7 @@ Some lucky data could even get "officialised" by the original author.
 import cgi
 import collections
 import datetime
-import functools
+# import functools
 # TODO: Change the format of logging so that it includes the date.
 import logging
 import operator
@@ -19,7 +20,7 @@ import os
 import re
 import sqlite3
 import string
-import sys
+# import sys
 import time
 import urllib.parse
 import uuid
@@ -35,10 +36,11 @@ instance_name = str(uuid.uuid4())
 
 
 class cached_property(object):
-
-	""" A read-only @property that is only evaluated once. The value is cached
+	"""
+	A read-only @property that is only evaluated once. The value is cached
 	on the object itself rather than the function or class; this should prevent
-	memory leakage."""
+	memory leakage.
+	"""
 
 	# This decorator allows to create properties that get properly generated only when accessed for the first time (without requiring to create a dynamic property that would have to check everytime if the content has been generated yet or not, generate it if required, and return it)
 	# http://www.toofishes.net/blog/python-cached-property-decorator/
@@ -57,22 +59,24 @@ class cached_property(object):
 
 
 class BetterFormat(string.Formatter):
+	"""
+	Introduce better formattings
 
-	""" Introduce better formattings
-
-			Currently, it allows to automatically indent a block of text according to its current depth of identation.
+	Currently, it allows to automatically indent a block of text according to its current depth of identation.
 	"""
 
 	def parse(self, format_string):
 		""" Receive the raw string and split its elements apart to facilitate the actual replacing """
 
 		return [(
-					before,
-					identifiant,
-					str(len(re.search('\t*$', before).group(0))) +
-						'\t' +
-						(param if param is not None else ''),
-				 	modif,
+				before,
+				identifiant,
+				str(
+					len(
+						re.search('\t*$', before).group(0)
+					)
+				) + '\t' + (param if param is not None else ''),
+				modif,
 				)
 				for before, identifiant, param, modif
 				in super().parse(format_string)]
@@ -90,15 +94,15 @@ class BetterFormat(string.Formatter):
 
 		pattern = re.sub('[0-9]+\t', extractTabs, pattern)
 
-		if sharedData['numberOfTabs']: # If there are tabs to be added
+		if sharedData['numberOfTabs']:  # If there are tabs to be added
 			v = (sharedData['numberOfTabs'] * '\t').join(v.splitlines(True))
-		
+
 		return super().format_field(v, pattern)
 
 
 class DynamicMapping(dict):
-
-	""" Provide a special dict to ease the formatting of strings for displaying on the website.
+	"""
+	Provide a special dict to ease the formatting of strings for displaying on the website.
 
 	Options to allow to automatically escape data and/or to allow missing keys.
 	"""
@@ -129,7 +133,7 @@ started_on = datetime.datetime.now()
 try:
 	# TODO: Don't this will implicitely call .read()?
 	# Which, then, shouldn't be let paremeter less, does it?
-	helloworld = open('data/helloworld.txt', encoding="utf-8") 
+	helloworld = open('data/helloworld.txt', encoding="utf-8")
 except OSError:
 	# TODO: Try to create the file # Or only try to create it when needed?
 	helloworld = []
@@ -150,8 +154,8 @@ moto = [
 		"This project is YOURS. Bring your ideas, opinions, code, content, …"),
 ]
 
-template = BetterFormat().format(
-"""<!DOCTYPE html>
+template = BetterFormat().format("""
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Hello world ☺ - Olissea DEV</title>
@@ -162,7 +166,7 @@ template = BetterFormat().format(
 		<div id="status"><strong><span class="WIP">WIP</span> - Work In Progress</strong>, <em>come back later!</em></div>
 		<div id="extra"><em>Contact me if interested!</em><br /><strong>Contact:</strong> e-warning [at symbol] hotmail.com</div>
 		<div id="title"><strong><span class="dev">Dev</span><span class="utopia">utopia</span></strong></div><!-- TODO: Change the font of "dev" for a terminal-style font, and a fancy one for "utopia". Change the color of dev to a dark blueish color and idk what for "utopia". -->
-		
+
 		<hr class="clear" />
 
 		<div id="main">
@@ -197,7 +201,7 @@ template = BetterFormat().format(
 			</div>
 			<div class="clear"></div>
 		</div>
-		
+
 		<div id="foot">
 			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span>❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
 			<span id="source"><strong>Source:</strong> ftp://anonymous@devutopia.net/ </span>
@@ -210,12 +214,9 @@ template = BetterFormat().format(
 		'<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(
 			*cgi.escape(line[:-1]).split(None, 1))
 		for line in helloworld)
-	or 
-	"<em>No lang registered yet!</em>",
+	or "<em>No lang registered yet!</em>",
 
-	moto='<li>'+'</li>\n<li>'.join('<br />\n'.join(rule)
-									for rule in moto)+'</li>'
-)
+	moto='<li>'+'</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto)+'</li>')
 
 test = """\
 <strong>GET:</strong> {get}<br />
@@ -234,7 +235,7 @@ rss_template = """\
 	{items}
 </feed>\
 """
-		
+
 rss_item = """\
 <entry>
 	<title>{descript}</title>
@@ -242,7 +243,8 @@ rss_item = """\
 	<link>{url}</link>
 	<description>{msg}</description>
 	<pubDate>{date}</pubDate>
-</entry>""" # TODO: Also make so that, if {msg} has more than one line, then it automatically become a block (if before only has \t*<.*?>) (tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+</entry>"""  # TODO: Also make so that, if {msg} has more than one line, then it automatically become a block (if before only has \t*<.*?>) (tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+
 
 class HTTPException(Exception):
 
@@ -257,8 +259,8 @@ class HTTPException(Exception):
 
 		return self
 
-HTTPException.error404 = HTTPException('404 Not Found',
-"""<!DOCTYPE html>
+HTTPException.error404 = HTTPException('404 Not Found', """
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>404 Not Found</title>
@@ -270,6 +272,7 @@ HTTPException.error404 = HTTPException('404 Not Found',
 	</body>
 </html>\
 """)
+
 
 class NotStrictList(list):
 	defaultNormalizer = operator.methodcaller('lower')
@@ -283,21 +286,24 @@ class NotStrictList(list):
 
 		return normalizer(item) in map(normalizer, self)
 
+
 class Args(dict):
 
 	def __init__(self, args):
 		pass
 
-class HTTPManager:
 
-	""" WSGI Utility tool """
+class HTTPManager:
+	"""
+	WSGI Utility tool
+	"""
 
 	status = '200 OK'
 
 	headers = {
 		'Content-Type': 'text/html; charset=utf-8',
 
-		# TODO: Make so that when editting Content-Type 
+		# TODO: Make so that when editting Content-Type
 		# it automatically becomes '{content-type}; charset={charset}'
 	}
 
@@ -320,9 +326,12 @@ class HTTPManager:
 
 			self.committed = True
 
+
 class application:
-	""" Main WSGI app """
-	
+	"""
+	Main WSGI app
+	"""
+
 	def __init__(self, environ, start_response):
 		self.environ = environ
 		self.start_response = start_response
@@ -332,11 +341,11 @@ class application:
 	@cached_property
 	def args(self):
 		return collections.defaultdict(list, urllib.parse.parse_qs(self.environ['QUERY_STRING']))
-	
+
 	@cached_property
 	def post(self):
 		return collections.defaultdict(list, urllib.parse.parse_qs(self.environ['wsgi.input'].readline().decode('UTF-8'), True) if self.environ["REQUEST_METHOD"] == 'POST' else {})
-	
+
 	def __iter__(self):
 		try:
 			# As "yield from" is only avaible from Python 3.3, this is done manually
@@ -344,10 +353,10 @@ class application:
 			mainGen = self.main()
 
 			firstItem = next(mainGen)
-			
+
 			# Default commit (if none has been emitted yet)
 			self.http.commit()
- 
+
 			# Note: I don't think anything is *sent* to the main app generator, so I don't handle that here
 			yield firstItem.encode('utf-8')
 
@@ -356,41 +365,39 @@ class application:
 
 		except HTTPException as HTTP_exception:
 			HTTPManager(self.start_response).exception(HTTP_exception)
-			
+
 			yield HTTP_exception(self.environ).msg.encode('utf-8')
 
 	def main(self):
 		if self.environ['PATH_INFO'].rstrip('/') != '':
 			raise HTTPException.error404
-		
+
 		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
 
 			yield BetterFormat().format(rss_template,
-				name='Hello World',
-				src='http://devutopia.net/helloworld.py?do=RSS',
-				descript='Hello World in several langages',
-				items=BetterFormat().format(rss_item,
-					descript='[fr] Bonjour tout le monde',
-					id='2013-09-22:helloworldentry-in_french-by_devutopia',
-					url='http://devutopia.net/helloworld.py?itemid=1',
-					msg='French version.<br />\nAdded by devutopia.', # TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
-					date='2013-09-22'
-				)
-			)
+										name='Hello World',
+										src='http://devutopia.net/helloworld.py?do=RSS',
+										descript='Hello World in several langages',
+										items=BetterFormat().format(rss_item,
+											descript='[fr] Bonjour tout le monde',
+											id='2013-09-22:helloworldentry-in_french-by_devutopia',
+											url='http://devutopia.net/helloworld.py?itemid=1',
+											msg='French version.<br />\nAdded by devutopia.',  # TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+											date='2013-09-22')
+										)
 
 			raise StopIteration
-		
+
 		# yield __import__('sys').version+'<br />'
 		# yield __import__('sqlite3').dbapi2.sqlite_version
-		
+
 		minutes = int(time.mktime(datetime.datetime.now().timetuple())/60 - time.mktime(started_on.timetuple())/60)
 
 		yield BetterFormat().format(template,
 			# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
 			# test='Nothing to see here 😒',
-			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(name=cgi.escape(instance_name), minutes=minutes, s='s'*(minutes > 1))#+'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
-		)
+			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(name=cgi.escape(instance_name), minutes=minutes, s='s'*(minutes > 1)))  # +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
 
 if __name__ == '__main__':
 	# Then run wsgiref for local testing
@@ -403,10 +410,9 @@ if __name__ == '__main__':
 
 	httpd = make_server('', 8000, application)
 
-	print('Launching the server in local mode... Hello!') # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it?
+	print('Launching the server in local mode... Hello!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it?
 
 	try:
 		httpd.serve_forever()
 	except KeyboardInterrupt:
 		print('Shuting down... Good bye!')
-
