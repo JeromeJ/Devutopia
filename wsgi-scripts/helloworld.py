@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# TODO: PEP 257 => http://www.python.org/dev/peps/pep-0257/
+# TODO: PEP 257 → http://www.python.org/dev/peps/pep-0257/
 
 """
 This script is the starting of a, hopefully, huge collaborative platform.
@@ -11,28 +11,34 @@ And every content will automatically accepted and stored in the "Content by user
 Some lucky data could even get "officialised" by the original author.
 """
 
+# TODO: Change the descript for something more appropriate?
+
 import cgi
 import collections
 import datetime
-# import functools
-# TODO: Change the format of logging so that it includes the date.
-import logging
+# import functools # Not used
+import logging  # TODO: Change the format of logging so that it includes the date
 import operator
 import os
 import re
 import sqlite3
 import string
-# import sys
+# import sys # Not used
 import time
 import urllib.parse
 import uuid
 
+# TODO: Should we changed official contact info? Creating an offical contact adress? I guess it's ok for now.
+# Comment ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
 __author__ = "JeromeJ"
 __contact__ = "e-warning [this would be an amphora symbol but we don't like spambots] hotmail.com"
 __website__ = "http://www.olissea.com/"
 __licence__ = "Really Free (but I always appreciate credits) aka you do whatever you want with it (something 'good' I hope)"
 
-if os.path.dirname(__file__):  # Bugfix: Sometimes(seems to be OS depending), if we launch the script from the folder where it should be launched, os.path.dirname(__file__) = '' => FileNotFound
+# Bugfix: Sometimes (seems to be OS related), if the script is launched directly from the current folder (eg. not launched by mod_wsgi),
+# os.path.dirname(__file__) then returns '' which raises a FileNotFound exception.
+# (But as FileNotFound exceptions aren't handled the same way on each OS, we check instead of catching it)
+if os.path.dirname(__file__):
 	os.chdir(os.path.dirname(__file__))
 
 instance_name = str(uuid.uuid4())
@@ -45,8 +51,9 @@ class cached_property(object):
 	memory leakage.
 	"""
 
+	# Source: http://www.toofishes.net/blog/python-cached-property-decorator/ # TODO: Should it be a metada? (like __source__)
+
 	# This decorator allows to create properties that get properly generated only when accessed for the first time (without requiring to create a dynamic property that would have to check everytime if the content has been generated yet or not, generate it if required, and return it)
-	# http://www.toofishes.net/blog/python-cached-property-decorator/
 
 	def __init__(self, fget, doc=None):
 		self.fget = fget
@@ -91,11 +98,13 @@ class BetterFormat(string.Formatter):
 
 		sharedData = {'numberOfTabs': 0}
 
-		def extractTabs(pattern):
+		def extractTabs(pattern):  # Creating a closure on sharedData
 			sharedData['numberOfTabs'] = int(pattern.group(0)[:-1])
 			return ""
 
 		pattern = re.sub('[0-9]+\t', extractTabs, pattern)
+
+		# End of Hacky way to "pop some text"
 
 		if sharedData['numberOfTabs']:  # If there are tabs to be added
 			v = (sharedData['numberOfTabs'] * '\t').join(v.splitlines(True))
@@ -109,10 +118,6 @@ class DynamicMapping(dict):
 
 	Options to allow to automatically escape data and/or to allow missing keys.
 	"""
-
-	def __new__(cls, *args, **kwargs):
-		# TODO: Check if it's useful...
-		return super().__new__(cls, *args, **kwargs)
 
 	def __init__(self, *args, strict=True, safe=True, **kwargs):
 		self.strict = strict
@@ -135,19 +140,24 @@ class DynamicMapping(dict):
 started_on = datetime.datetime.now()
 
 try:
-	# TODO: Don't this will implicitely call .read()?
-	# Which, then, shouldn't be let paremeter less, does it?
-	# Check http://docs.python.org/3.3/library/functions.html#open
+	# TODO: Wont this implicitely call ".read()"? (when we iter over it, see tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter )
+	# Then, it shouldn't be let paremeter-less, right?
+	# → Check the opener parameter of http://docs.python.org/3.3/library/functions.html#open
+
+	# TODO: Also find a way to embed that into a "with" block as it should?
+
 	helloworld = open('data/helloworld.txt', encoding="utf-8")
 except OSError:
-	# TODO: Try to create the file # Or only try to create it when needed?
+	# TODO: Try to create the file # Or only try to create it when needed? # Hmm?
 	helloworld = []
-	logging.warning(
-		"data/helloworld.txt NOT FOUND! -> Creating an empty list.")
+	logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.") # TODO: Check if "→" displays well in the log (I guess so)
 
-HW_conn = sqlite3.connect('data/helloworld.db')
-c = HW_conn.cursor()
-c.execute('CREATE TABLE IF NOT EXISTS langs (id INTEGER PRIMARY KEY, author INTEGER, lang_name VARCHAR, translation VARCHAR, added DATE)')
+
+# TODO: TO BE FINISHED YET
+# HW_conn = sqlite3.connect('data/helloworld.db')
+# c = HW_conn.cursor()
+# c.execute('CREATE TABLE IF NOT EXISTS langs (id INTEGER PRIMARY KEY, author INTEGER, lang_name VARCHAR, translation VARCHAR, added DATE)')
+# End of not yet finished code
 
 moto = [
 	("Bring the advantages of programming's world decentralized systems (like git, …) to the whole world.",),
@@ -168,9 +178,9 @@ template = BetterFormat().format("""
 		<link rel="stylesheet" media="screen" type="text/css" title="Main style" href="/css/main.css" />
 	</head>
 	<body>
-		<div id="status"><strong><span class="WIP">WIP</span> - Work In Progress</strong>, <em>come back later!</em></div>
-		<div id="extra"><em>Contact me if interested!</em><br /><strong>Contact:</strong> e-warning [at symbol] hotmail.com</div>
-		<div id="title"><strong><span class="dev">Dev</span><span class="utopia">utopia</span></strong></div><!-- TODO: Change the font of "dev" for a terminal-style font, and a fancy one for "utopia". Change the color of dev to a dark blueish color and idk what for "utopia". -->
+		<div id="status"><strong><span class="WIP">WIP</span> - Work In Progress</strong>, <em>come back later!</em></div><!-- # TODO: Remove that? When? -->
+		<div id="extra"><em>Contact me if interested!</em><br /><strong>Contact:</strong> e-warning [at symbol] hotmail.com</div><!-- # TODO: See tag:devutopia.net,2013-11-03:Topic-changing-contact-info (in helloworld.py) -->
+		<div id="title"><strong><span class="dev">Dev</span><span class="utopia">utopia</span></strong></div>
 
 		<hr class="clear" />
 
@@ -208,7 +218,7 @@ template = BetterFormat().format("""
 		</div>
 
 		<div id="foot">
-			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span>❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- Ne s'affiche que sous win... Une piste: U+1F495, U+1F496, U+1F497, U+1F499, U+1F49A, U+1F49B, U+1F49C, U+1F49D, U+1F49E, U+1F49F, U+1F496, U+1F497, U+1F498, U+1F49B, U+1F49D, U+1F49E, U+1F49F la séquence complète. C’est valide, et il existe sûrement une fonte qui les a --><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
+			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span>❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- # TODO: Ne s'affiche que sous win… Une piste: U+1F495, U+1F496, U+1F497, U+1F499, U+1F49A, U+1F49B, U+1F49C, U+1F49D, U+1F49E, U+1F49F, U+1F496, U+1F497, U+1F498, U+1F49B, U+1F49D, U+1F49E, U+1F49F la séquence complète. C’est valide, et il existe sûrement une fonte qui les a --><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
 			<span id="source"><strong>Source:</strong> ftp://anonymous@devutopia.net/ </span>
 		</div>
 	</body>
@@ -218,7 +228,7 @@ template = BetterFormat().format("""
 	langs='\n'.join(
 		'<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(
 			*cgi.escape(line[:-1]).split(None, 1))
-		for line in helloworld)
+		for line in helloworld) # Code ID: tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
 	or "<em>No lang registered yet!</em>",
 
 	moto='<li>'+'</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto)+'</li>')
@@ -230,6 +240,7 @@ test = """\
 <strong>Method:</strong> {method}\
 """
 
+# TODO: Continuing studying ATOM feeds.
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -248,7 +259,7 @@ rss_item = """\
 	<link>{url}</link>
 	<description>{msg}</description>
 	<pubDate>{date}</pubDate>
-</entry>"""  # TODO: Also make so that, if {msg} has more than one line, then it automatically become a block (if before only has \t*<.*?>) (tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+</entry>"""  # TODO: Also make so that, if {msg} has more than one line, then it automatically becomes a block (tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
 
 
 class HTTPException(Exception):
@@ -279,7 +290,10 @@ HTTPException.error404 = HTTPException('404 Not Found', """
 """)
 
 
-class NotStrictList(list):
+class NotStrictList(list):  # TODO: Use it!? Maybe improving it first (+ see Args class)
+	""" Allows to normalize data automatically when testing for the presence of some data in that list. """
+	# TODO: Should/could it be about sequences in general?
+
 	defaultNormalizer = operator.methodcaller('lower')
 
 	def __contains__(self, item, strict=False, normalizer=None):
@@ -292,6 +306,8 @@ class NotStrictList(list):
 		return normalizer(item) in map(normalizer, self)
 
 
+# TODO: Finish it too…
+# Will probably be used to automatically do what is needed for args and post? (for instance changing them into a dict of NonStrictList?)
 class Args(dict):
 
 	def __init__(self, args):
@@ -300,7 +316,7 @@ class Args(dict):
 
 class HTTPManager:
 	"""
-	WSGI Utility tool
+	WSGI HTTP Managing Utility tool
 	"""
 
 	status = '200 OK'
@@ -308,7 +324,7 @@ class HTTPManager:
 	headers = {
 		'Content-Type': 'text/html; charset=utf-8',
 
-		# TODO: Make so that when editting Content-Type
+		# TODO: Idea: Make so that when editting Content-Type
 		# it automatically becomes '{content-type}; charset={charset}'
 	}
 
@@ -336,6 +352,7 @@ class application:
 	"""
 	Main WSGI app
 	"""
+	# TODO: Change the docstring? Call it "presentation" or "homepage"? Or let it be the "Helloworld app" even though it will probably eventually not be the "homepage app" anymore? (Maybe create the "homepage app" and set it so "homepage_app = hello_world_app"?)
 
 	def __init__(self, environ, start_response):
 		self.environ = environ
@@ -343,6 +360,7 @@ class application:
 
 		self.http = HTTPManager(start_response)
 
+	# TODO: Handle the two methods below by the class Args?
 	@cached_property
 	def args(self):
 		return collections.defaultdict(list, urllib.parse.parse_qs(self.environ['QUERY_STRING']))
@@ -355,14 +373,16 @@ class application:
 		try:
 			# As "yield from" is only avaible from Python 3.3, this is done manually
 
+			# TODO: We can't put that in a decorator right? I think I tried and finished with that only solution: __iter__ is kind of the decorator for self.main
+
 			mainGen = self.main()
 
 			firstItem = next(mainGen)
 
-			# Default commit (if none has been emitted yet)
+			# Default commit (if none has been sent yet)
 			self.http.commit()
 
-			# Note: I don't think anything is *sent* to the main app generator, so I don't handle that here
+			# Note: I don't think anything is *sent back* (generator.send and "foo = (yield bar)") to the main app generator (by WSGI itself), so I don't handle that here…
 			yield firstItem.encode('utf-8')
 
 			for el in mainGen:
@@ -380,6 +400,7 @@ class application:
 		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # In the future, will use NotStrictList class.
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
 
+			# TODO: Finish to generate RSS automatically
 			yield BetterFormat().format(rss_template,
 										name='Hello World',
 										src='http://devutopia.net/helloworld.py?do=RSS',
@@ -395,19 +416,21 @@ class application:
 			raise StopIteration
 
 		# yield __import__('sys').version+'<br />'
-		# yield __import__('sqlite3').dbapi2.sqlite_version
+		# yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
 
-		minutes = int(time.mktime(datetime.datetime.now().timetuple())/60 - time.mktime(started_on.timetuple())/60)
+		minutes = int(time.mktime(datetime.datetime.now().timetuple())/60 - time.mktime(started_on.timetuple())/60) # Timestamp in minutes of now minus timestamp of minutes since when that instance started
 
 		yield BetterFormat().format(template,
 			# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
 			# test='Nothing to see here 😒',
-			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(name=cgi.escape(instance_name), minutes=minutes, s='s'*(minutes > 1)))  # +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
+			# TODO: Should be put in the test variable? (helloworld.py scope)
+			# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting )
+			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(name=cgi.escape(instance_name), minutes=minutes, s='s'*(minutes > 1)))   # +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
 
 if __name__ == '__main__':
 	# Then run wsgiref for local testing
-	# -> I don't know if wsgiref handles multiple instances (and if so, by its own)
-	# -> I don't know if I have to handle the request myself if using wsgiref
+	# → I don't know if wsgiref handles multiple instances (and if so, by its own) (→ I guess/hope so) # TODO: Investiguate
+	# → I don't know if I have to handle the request myself if using wsgiref (→ Yep, see answer below)
 
 	# Answer: "If you want to serve multiple applications on a single host and port, you should create a WSGI application that parses PATH_INFO to select which application to invoke for each request. (E.g., using the shift_path_info() function from wsgiref.util.)"
 
@@ -415,7 +438,7 @@ if __name__ == '__main__':
 
 	httpd = make_server('', 8000, application)
 
-	print('Launching the server in local mode... Hello!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it?
+	print('Launching the server in local mode... Hello!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it? (Or you can "modify" the Windows environnement but it's not a good idea and not perfect)
 
 	try:
 		httpd.serve_forever()
