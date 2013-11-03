@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# TODO: PEP 257 => http://www.python.org/dev/peps/pep-0257/
+
 """
 This script is the starting of a, hopefully, huge collaborative platform.
 
@@ -30,7 +32,8 @@ __contact__ = "e-warning [this would be an amphora symbol but we don't like spam
 __website__ = "http://www.olissea.com/"
 __licence__ = "Really Free (but I always appreciate credits) aka you do whatever you want with it (something 'good' I hope)"
 
-os.chdir(os.path.dirname(__file__))
+if os.path.dirname(__file__):  # Bugfix: Sometimes(seems to be OS depending), if we launch the script from the folder where it should be launched, os.path.dirname(__file__) = '' => FileNotFound
+	os.chdir(os.path.dirname(__file__))
 
 instance_name = str(uuid.uuid4())
 
@@ -108,6 +111,7 @@ class DynamicMapping(dict):
 	"""
 
 	def __new__(cls, *args, **kwargs):
+		# TODO: Check if it's useful...
 		return super().__new__(cls, *args, **kwargs)
 
 	def __init__(self, *args, strict=True, safe=True, **kwargs):
@@ -133,6 +137,7 @@ started_on = datetime.datetime.now()
 try:
 	# TODO: Don't this will implicitely call .read()?
 	# Which, then, shouldn't be let paremeter less, does it?
+	# Check http://docs.python.org/3.3/library/functions.html#open
 	helloworld = open('data/helloworld.txt', encoding="utf-8")
 except OSError:
 	# TODO: Try to create the file # Or only try to create it when needed?
@@ -203,7 +208,7 @@ template = BetterFormat().format("""
 		</div>
 
 		<div id="foot">
-			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span>❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
+			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span>❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- Ne s'affiche que sous win... Une piste: U+1F495, U+1F496, U+1F497, U+1F499, U+1F49A, U+1F49B, U+1F49C, U+1F49D, U+1F49E, U+1F49F, U+1F496, U+1F497, U+1F498, U+1F49B, U+1F49D, U+1F49E, U+1F49F la séquence complète. C’est valide, et il existe sûrement une fonte qui les a --><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
 			<span id="source"><strong>Source:</strong> ftp://anonymous@devutopia.net/ </span>
 		</div>
 	</body>
@@ -372,7 +377,7 @@ class application:
 		if self.environ['PATH_INFO'].rstrip('/') != '':
 			raise HTTPException.error404
 
-		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):
+		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # In the future, will use NotStrictList class.
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
 
 			yield BetterFormat().format(rss_template,
