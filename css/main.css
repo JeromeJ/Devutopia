@@ -1,3 +1,17 @@
+/*
+ * Doesn't seem to work...
+ * Currently only works for Linux if the ttf is placed in ~/.fonts or /usr/share/fonts (then reboot your browser)
+ * Source: http://www.kirsle.net/blog/kirsle/make-emoji-work-in-linux
+ * 
+ * TODO: Host it ourselves instead of using the one of the official website of course
+ * 
+@font-face{
+	font-family: 'Symbola';
+	src: url('http://users.teilar.gr/~g1951d/Symbola.ttf');
+}
+
+.hearts{font-family: 'Symbola'} */
+
 html, body { height: 100% }
 
 body { margin: 8px } /* Default Firefox value */

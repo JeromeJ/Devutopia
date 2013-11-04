@@ -218,7 +218,7 @@ template = BetterFormat().format("""
 		</div>
 
 		<div id="foot">
-			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span>❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- # TODO: Ne s'affiche que sous win… Une piste: U+1F495, U+1F496, U+1F497, U+1F499, U+1F49A, U+1F49B, U+1F49C, U+1F49D, U+1F49E, U+1F49F, U+1F496, U+1F497, U+1F498, U+1F49B, U+1F49D, U+1F49E, U+1F49F la séquence complète. C’est valide, et il existe sûrement une fonte qui les a --><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
+			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span class="hearts">❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- # TODO: Ne s'affiche que sous win… Une piste: U+1F495, U+1F496, U+1F497, U+1F499, U+1F49A, U+1F49B, U+1F49C, U+1F49D, U+1F49E, U+1F49F, U+1F496, U+1F497, U+1F498, U+1F49B, U+1F49D, U+1F49E, U+1F49F la séquence complète. C’est valide, et il existe sûrement une fonte qui les a --><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
 			<span id="source"><strong>Source:</strong> ftp://anonymous@devutopia.net/ </span>
 		</div>
 	</body>
