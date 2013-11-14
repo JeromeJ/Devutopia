@@ -202,7 +202,7 @@ template = BetterFormat().format("""
 				</div>
 			</div>
 			<div id="rightContainer">
-				<h1>« A huge collaborative project to come! »</h1>
+				<h1>« A huge collaborative project to come! »</h1>
 				<h2>What is this?</h2>
 				<div class="spoiler">
 					<ol id="moto">
@@ -401,17 +401,20 @@ class application:
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
 
 			# TODO: Finish to generate RSS automatically
-			yield BetterFormat().format(rss_template,
-										name='Hello World',
-										src='http://devutopia.net/helloworld.py?do=RSS',
-										descript='Hello World in several langages',
-										items=BetterFormat().format(rss_item,
-											descript='[fr] Bonjour tout le monde',
-											id='2013-09-22:helloworldentry-in_french-by_devutopia',
-											url='http://devutopia.net/helloworld.py?itemid=1',
-											msg='French version.<br />\nAdded by devutopia.',  # TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
-											date='2013-09-22')
-										)
+			yield BetterFormat().format(
+				rss_template,
+				name='Hello World',
+				src='http://devutopia.net/helloworld.py?do=RSS',
+				descript='Hello World in several langages',
+				items=BetterFormat().format(
+					rss_item,
+					descript='[fr] Bonjour tout le monde',
+					id='2013-09-22:helloworldentry-in_french-by_devutopia',
+					url='http://devutopia.net/helloworld.py?itemid=1',
+					msg='French version.<br />\nAdded by devutopia.',  # TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+					date='2013-09-22'
+				)
+			)
 
 			raise StopIteration
 
