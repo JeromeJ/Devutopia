@@ -35,11 +35,19 @@ __contact__ = "e-warning [this would be an amphora symbol but we don't like spam
 __website__ = "http://www.olissea.com/"
 __licence__ = "Really Free (but I always appreciate credits) aka you do whatever you want with it (something 'good' I hope)"
 
-# Bugfix: Sometimes (seems to be OS related), if the script is launched directly from the current folder (eg. not launched by mod_wsgi),
-# os.path.dirname(__file__) then returns '' which raises a FileNotFound exception.
-# (But as FileNotFound exceptions aren't handled the same way on each OS, we check instead of catching it)
-if os.path.dirname(__file__):
-	os.chdir(os.path.dirname(__file__))
+
+try:
+	# Uniformisation
+
+	# Sometimes "os.path.dirname" return an empty string which is an invalid parameter for "os.chdir".
+	# → Using "or" instead of catching the FileNotFound exception which varies from one OS to another.
+
+	os.chdir(os.path.dirname(__file__) or ".")
+except NameError:
+	# "__file__" is not always defined
+
+	pass
+
 
 instance_name = str(uuid.uuid4())
 
@@ -78,7 +86,8 @@ class BetterFormat(string.Formatter):
 	def parse(self, format_string):
 		""" Receive the raw string and split its elements apart to facilitate the actual replacing """
 
-		return [(
+		return [
+			(
 				before,
 				identifiant,
 				str(
@@ -87,9 +96,10 @@ class BetterFormat(string.Formatter):
 					)
 				) + '\t' + (param if param is not None else ''),
 				modif,
-				)
-				for before, identifiant, param, modif
-				in super().parse(format_string)]
+			)
+			for before, identifiant, param, modif
+			in super().parse(format_string)
+		]
 
 	def format_field(self, v, pattern):
 		""" Receive the string to be transformed and the pattern according which it is supposed to be modified """
