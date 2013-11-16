@@ -106,18 +106,18 @@ class BetterFormat(string.Formatter):
 
 		# Hacky way to remove a dynamic sequence of characters ([0-9]+\t) and returning it (= pop some text)
 
-		sharedData = {'numberOfTabs': 0}
+		shared_data = {'numberOfTabs': 0}
 
 		def extractTabs(pattern):  # Creating a closure on sharedData
-			sharedData['numberOfTabs'] = int(pattern.group(0)[:-1])
+			shared_data['numberOfTabs'] = int(pattern.group(0)[:-1])
 			return ""
 
 		pattern = re.sub('[0-9]+\t', extractTabs, pattern)
 
 		# End of Hacky way to "pop some text"
 
-		if sharedData['numberOfTabs']:  # If there are tabs to be added
-			v = (sharedData['numberOfTabs'] * '\t').join(v.splitlines(True))
+		if shared_data['numberOfTabs']:  # If there are tabs to be added
+			v = (shared_data['numberOfTabs'] * '\t').join(v.splitlines(True))
 
 		return super().format_field(v, pattern)
 
@@ -304,14 +304,14 @@ class NotStrictList(list):  # TODO: Use it!? Maybe improving it first (+ see Arg
 	""" Allows to normalize data automatically when testing for the presence of some data in that list. """
 	# TODO: Should/could it be about sequences in general?
 
-	defaultNormalizer = operator.methodcaller('lower')
+	default_normalizer = operator.methodcaller('lower')
 
 	def __contains__(self, item, strict=False, normalizer=None):
 		if strict:
 			return super().__contains__(item)
 
 		if normalizer is None:
-			normalizer = NotStrictList.defaultNormalizer
+			normalizer = NotStrictList.default_normalizer
 
 		return normalizer(item) in map(normalizer, self)
 
@@ -385,17 +385,17 @@ class application:
 
 			# TODO: We can't put that in a decorator right? I think I tried and finished with that only solution: __iter__ is kind of the decorator for self.main
 
-			mainGen = self.main()
+			main_gen = self.main()
 
-			firstItem = next(mainGen)
+			first_item = next(main_gen)
 
 			# Default commit (if none has been sent yet)
 			self.http.commit()
 
 			# Note: I don't think anything is *sent back* (generator.send and "foo = (yield bar)") to the main app generator (by WSGI itself), so I don't handle that here…
-			yield firstItem.encode('utf-8')
+			yield first_item.encode('utf-8')
 
-			for el in mainGen:
+			for el in main_gen:
 				yield el.encode('utf-8')
 
 		except HTTPException as HTTP_exception:
