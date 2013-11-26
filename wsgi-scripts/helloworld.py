@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# TODO: PEP 257 → http://www.python.org/dev/peps/pep-0257/
-
 """
-This script is the starting of a, hopefully, huge collaborative platform.
+Platform that aim to bring the decentralize advantages to the whole world.
 
-Everything will be user-collaborative-able, everyone will be able to add content.
-And every content will automatically accepted and stored in the "Content by users" tab (the name might differ).
-Some lucky data could even get "officialised" by the original author.
+Everything will be user-collaborative-able, everyone will be able to add content
+without asking and without replacing original content.
+Every contribution will be available to the public,
+if the publisher wish so. This is not up to the original publisher though.
+Original author can then choose to ignore, accept or merge new modifications.
+
+Technical note: Probably wont be really decentralized at first, for the sake of simplicity of dev,
+but the goal is to make it really decentralized later. For now, we'd like a quick neat way
+to bring a decentralized-like plateform for everybody and every type of content.
 """
-
-# TODO: Change the descript for something more appropriate?
 
 import cgi
 import collections
@@ -33,7 +35,7 @@ import uuid
 __author__ = "JeromeJ"
 __contact__ = "e-warning [this would be an amphora symbol but we don't like spambots] hotmail.com"
 __website__ = "http://www.olissea.com/"
-__licence__ = "Really Free (but I always appreciate credits) aka you do whatever you want with it (something 'good' I hope)"
+__licence__ = "Copy left: Share-alike"
 
 
 try:
@@ -78,13 +80,13 @@ class cached_property(object):
 
 class BetterFormat(string.Formatter):
 	"""
-	Introduce better formattings
+	Introduce better formattings.
 
 	Currently, it allows to automatically indent a block of text according to its current depth of identation.
 	"""
 
 	def parse(self, format_string):
-		""" Receive the raw string and split its elements apart to facilitate the actual replacing """
+		"""Receive the raw string and split its elements apart to facilitate the actual replacing."""
 
 		return [
 			(
@@ -102,7 +104,7 @@ class BetterFormat(string.Formatter):
 		]
 
 	def format_field(self, v, pattern):
-		""" Receive the string to be transformed and the pattern according which it is supposed to be modified """
+		"""Receive the string to be transformed and the pattern according which it is supposed to be modified."""
 
 		# Hacky way to remove a dynamic sequence of characters ([0-9]+\t) and returning it (= pop some text)
 
@@ -301,7 +303,7 @@ HTTPException.error404 = HTTPException('404 Not Found', """
 
 
 class NotStrictList(list):  # TODO: Use it!? Maybe improving it first (+ see Args class)
-	""" Allows to normalize data automatically when testing for the presence of some data in that list. """
+	"""Offer the possibility to normalize data automatically when testing for the presence of some data in that list."""
 	# TODO: Should/could it be about sequences in general?
 
 	default_normalizer = operator.methodcaller('lower')
@@ -325,9 +327,7 @@ class Args(dict):
 
 
 class HTTPManager:
-	"""
-	WSGI HTTP Managing Utility tool
-	"""
+	"""WSGI HTTP Managing Utility tool."""
 
 	status = '200 OK'
 
@@ -359,9 +359,8 @@ class HTTPManager:
 
 
 class application:
-	"""
-	Main WSGI app
-	"""
+	"""Main WSGI app."""
+	
 	# TODO: Change the docstring? Call it "presentation" or "homepage"? Or let it be the "Helloworld app" even though it will probably eventually not be the "homepage app" anymore? (Maybe create the "homepage app" and set it so "homepage_app = hello_world_app"?)
 
 	def __init__(self, environ, start_response):
