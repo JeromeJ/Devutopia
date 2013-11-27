@@ -187,7 +187,7 @@ template = BetterFormat().format("""
 	<head>
 		<title>Hello world ☺ - Olissea DEV</title>
 		<meta charset="UTF-8" />
-		<link rel="stylesheet" media="screen" type="text/css" title="Main style" href="/css/main.css" />
+		<link rel="stylesheet" media="screen" type="text/css" title="Main style" href="css/main.css" />
 	</head>
 	<body>
 		<div id="status"><strong><span class="WIP">WIP</span> - Work In Progress</strong>, <em>come back later!</em></div><!-- # TODO: Remove that? When? -->
@@ -399,12 +399,27 @@ class application:
 
 		except HTTPException as HTTP_exception:
 			HTTPManager(self.start_response).exception(HTTP_exception)
-
 			yield HTTP_exception(self.environ).msg.encode('utf-8')
 
 	def main(self):
-		if self.environ['PATH_INFO'].rstrip('/') != '':
+
+		# [1:] get rid of the first slash and so get the file 
+		# relative to the current script
+		if os.path.isfile(self.environ['PATH_INFO'][1:]): 
+			authorisedExt = {".css" : "text/css", ".js" : "application/x-javascript"}
+			ext = os.path.splitext(self.environ['PATH_INFO'])[1]
+
+			if ext in authorisedExt:
+				self.http.headers['Content-Type'] = authorisedExt[ext]
+				file = open(self.environ['PATH_INFO'][1:])
+				yield open(self.environ['PATH_INFO'][1:]).read(1048576)
+				raise StopIteration
+			else:
+				raise HTTPException.error404
+		elif self.environ['PATH_INFO'].rstrip('/') != '':
 			raise HTTPException.error404
+
+
 
 		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # In the future, will use NotStrictList class.
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
