@@ -46,7 +46,7 @@ try:
 
 	os.chdir(os.path.dirname(__file__) or ".")
 except NameError:
-	# "__file__" is not always defined
+	# "__file__" is not always defined, notably when running through interactive shell for instance.
 
 	pass
 
@@ -63,7 +63,9 @@ class cached_property(object):
 
 	# Source: http://www.toofishes.net/blog/python-cached-property-decorator/ # TODO: Should it be a metada? (like __source__)
 
-	# This decorator allows to create properties that get properly generated only when accessed for the first time (without requiring to create a dynamic property that would have to check everytime if the content has been generated yet or not, generate it if required, and return it)
+	# This decorator allows to create properties that get properly generated only when accessed
+	# for the first time (without requiring to create a dynamic property that would have to check
+	# everytime if the content has been generated yet or not, generate it if required, and return it)
 
 	def __init__(self, fget, doc=None):
 		self.fget = fget
