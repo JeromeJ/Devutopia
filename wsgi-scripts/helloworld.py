@@ -412,8 +412,7 @@ class application:
 			ext = os.path.splitext(self.environ['PATH_INFO'])[1]
 
 			if ext in authorisedExt:
-				self.http.headers['Content-Type'] = authorisedExt[ext]
-				file = open(self.environ['PATH_INFO'][1:])
+				self.http.headers['Content-Type'] = authorisedExt[ext] + "; charset=utf-8"
 				yield open(self.environ['PATH_INFO'][1:]).read(1048576)
 				raise StopIteration
 			else:
