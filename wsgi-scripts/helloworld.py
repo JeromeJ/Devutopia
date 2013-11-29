@@ -80,6 +80,7 @@ class cached_property(object):
 		return result
 
 
+# TODO: Question: Couldn't it use @staticmethod instead?
 class BetterFormat(string.Formatter):
 	"""
 	Introduce better formattings.
@@ -183,57 +184,7 @@ moto = [
 		"This project is YOURS. Bring your ideas, opinions, code, content, …"),
 ]
 
-template = BetterFormat().format("""
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Hello world ☺ - Olissea DEV</title>
-		<meta charset="UTF-8" />
-		<link rel="stylesheet" media="screen" type="text/css" title="Main style" href="css/main.css" />
-	</head>
-	<body>
-		<header id="header">
-			<div id="status"><strong><span class="WIP">WIP</span> Work In Progress</strong>, <em>come back later!</em></div><!-- # TODO: Remove that? When? -->
-			<div id="extra"><em>Contact me if interested!</em><br /><strong>Contact:</strong> e-warning [at symbol] hotmail.com</div><!-- # TODO: See tag:devutopia.net,2013-11-03:Topic-changing-contact-info (in helloworld.py) -->
-			<div id="title"><strong><span class="dev">Dev</span><span class="utopia">utopia</span></strong></div>
-		</header>
-
-		<div id="main">
-			<h1 id="catchphrase" >« A huge collaborative project to come! »</h1>
-			<section class="spoiler">
-				<h2>What is this?</h2>
-				<ol id="moto">
-					{moto}
-				</ol>
-
-				<p>
-					So, your contributions will be automatically accepted under the "By users" tab and will be displayed to the whole world (if you wish), they'll stay there (if you wish), and, in case you proposed data for someone else's content and if you're lucky, it may get merged with the original content by his original author or be choosen to be the new official version.
-				</p>
-			</section>
-			
-			<section id="helloWorld">
-				<h2>Hello World</h1>
-				{langs}
-				…<br />
-				<button>Add a lang</button> <em>or</em> edit one… (<em>Not implemented yet… Soon!</em>)
-			</section>
-
-			
-			<section id="test">
-				<h2>Testing zone</h2>
-				<p>
-					{{test}}
-				</p>
-			</section>
-
-		</div>
-
-		<footer id="foot">
-			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span class="hearts">❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- # TODO: Ne s'affiche que sous win… Une piste: U+1F495, U+1F496, U+1F497, U+1F499, U+1F49A, U+1F49B, U+1F49C, U+1F49D, U+1F49E, U+1F49F, U+1F496, U+1F497, U+1F498, U+1F49B, U+1F49D, U+1F49E, U+1F49F la séquence complète. C’est valide, et il existe sûrement une fonte qui les a --><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
-			<span id="source"><strong>Source:</strong> ftp://anonymous@devutopia.net/ </span>
-		</footer>
-	</body>
-</html>""",
+template = BetterFormat().format(open('tpl/index.tpl').read(4096),
 	# Can't use '<gen> if helloword else "No lang registered yet"' because helloworld returns True (as it is a generator) even if it will not yield anything (which was confusing at first but totaly normal)
 	# So we are using "or" instead
 	langs='\n'.join(
@@ -244,18 +195,23 @@ template = BetterFormat().format("""
 
 	moto='<li>'+'</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto)+'</li>')
 
-test = """\
-<strong>GET:</strong> {get}<br />
-<strong>POST:</strong> {post}<br /><br />
+# Not used
+# test = """\
+# <strong>GET:</strong> {get}<br />
+# <strong>POST:</strong> {post}<br /><br />
 
-<strong>Method:</strong> {method}\
-"""
+# <strong>Method:</strong> {method}\
+# """
 
 # TODO: Continuing studying ATOM feeds.
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>{name}</title>
+	<!--<subtitle></subtitle>-->
+	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! -->
+	<!--<author><name></name><uri></uri></author>-->
+	<link rel="alternate" type="text/html" href="{src_html}" />
 	<link rel="self" href="{src}" />
 	<id>tag:devutopia.net,2013-09-22:helloworldfeed</id>
 	<!--<description>{descript}</description>-->
@@ -267,10 +223,15 @@ rss_item = """\
 <entry>
 	<title>{descript}</title>
 	<id>tag:devutopia.net,{id}</id>
-	<link>{url}</link>
+	<link rel="alternate" type="text/html"
+>{url}</link>
 	<description>{msg}</description>
-	<pubDate>{date}</pubDate>
+	<published>{date}</published>
+	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! (not published) -->
+	<!--<summary type="html"></summary>-->
+	<content type="html"></content>
 </entry>"""  # TODO: Also make so that, if {msg} has more than one line, then it automatically becomes a block (tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+# TODO: Isn't rel="alternate" by default in that case? (Couldn't specify a link to a RSS entry, right?)
 
 
 class HTTPException(Exception):
@@ -285,6 +246,7 @@ class HTTPException(Exception):
 			DynamicMapping(environ, strict=False, safe=True))
 
 		return self
+
 
 HTTPException.error404 = HTTPException('404 Not Found', """
 <!DOCTYPE html>
@@ -401,35 +363,33 @@ class application:
 			yield HTTP_exception(self.environ).msg.encode('utf-8')
 
 	def main(self):
-
-		# [1:] get rid of the first slash and so get the file 
-		# relative to the current script
-		if os.path.isfile(self.environ['PATH_INFO'][1:]):
-			# Fonts ".otf" : "application/x-font-otf" sauf que ça marche pas il y a trop
-			# de forçage d'encoding.
-			authorisedExt = {".css" : "text/css", ".js" : "application/x-javascript"}
-
+		
+		# To be able to run in local:
+		if os.path.isfile(self.environ['PATH_INFO'][1:]):  # Getting rid of the starting "/" to make it relative
+			authorised_ext = {".css" : "text/css", ".js" : "application/x-javascript"}
 			ext = os.path.splitext(self.environ['PATH_INFO'])[1]
 
-			if ext in authorisedExt:
-				self.http.headers['Content-Type'] = authorisedExt[ext] + "; charset=utf-8"
+			if ext in authorised_ext:
+				self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
+				
 				yield open(self.environ['PATH_INFO'][1:]).read(1048576)
 				raise StopIteration
 			else:
 				raise HTTPException.error404
 		elif self.environ['PATH_INFO'].rstrip('/') != '':
 			raise HTTPException.error404
-
-
-
+		
 		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # In the future, will use NotStrictList class.
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
-
+			
+			# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping?
+			
 			# TODO: Finish to generate RSS automatically
 			yield BetterFormat().format(
 				rss_template,
 				name='Hello World',
-				src='http://devutopia.net/helloworld.py?do=RSS',
+				src_html='http://devutopia.net/',  # TODO: Make dynamic
+				src='http://devutopia.net/?do=RSS',  # TODO: Make dynamic
 				descript='Hello World in several langages',
 				items=BetterFormat().format(
 					rss_item,
