@@ -371,7 +371,7 @@ class application:
 			if ext in authorised_ext:
 				self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
 
-				yield open(self.environ['PATH_INFO'][1:], open="utf-8").read(1048576)
+				yield open(self.environ['PATH_INFO'][1:], encoding="utf-8").read(1048576)
 				raise StopIteration
 			else:
 				raise HTTPException.error404
