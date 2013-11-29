@@ -80,6 +80,7 @@ class cached_property(object):
 		return result
 
 
+# TODO: Question: Couldn't it use @staticmethod instead?
 class BetterFormat(string.Formatter):
 	"""
 	Introduce better formattings.
@@ -259,6 +260,10 @@ rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>{name}</title>
+	<!--<subtitle></subtitle>-->
+	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! -->
+	<!--<author><name></name><uri></uri></author>-->
+	<link rel="alternate" type="text/html" href="{src_html}" />
 	<link rel="self" href="{src}" />
 	<id>tag:devutopia.net,2013-09-22:helloworldfeed</id>
 	<!--<description>{descript}</description>-->
@@ -270,10 +275,15 @@ rss_item = """\
 <entry>
 	<title>{descript}</title>
 	<id>tag:devutopia.net,{id}</id>
-	<link>{url}</link>
+	<link rel="alternate" type="text/html"
+>{url}</link>
 	<description>{msg}</description>
-	<pubDate>{date}</pubDate>
+	<published>{date}</published>
+	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! (not published) -->
+	<!--<summary type="html"></summary>-->
+	<content type="html"></content>
 </entry>"""  # TODO: Also make so that, if {msg} has more than one line, then it automatically becomes a block (tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+# TODO: Isn't rel="alternate" by default in that case? (Couldn't specify a link to a RSS entry, right?)
 
 
 class HTTPException(Exception):
@@ -288,6 +298,7 @@ class HTTPException(Exception):
 			DynamicMapping(environ, strict=False, safe=True))
 
 		return self
+
 
 HTTPException.error404 = HTTPException('404 Not Found', """
 <!DOCTYPE html>
@@ -404,32 +415,33 @@ class application:
 			yield HTTP_exception(self.environ).msg.encode('utf-8')
 
 	def main(self):
-
-		# [1:] get rid of the first slash and so get the file 
-		# relative to the current script
-		if os.path.isfile(self.environ['PATH_INFO'][1:]): 
-			authorisedExt = {".css" : "text/css", ".js" : "application/x-javascript"}
+		
+		# To be able to run in local:
+		if os.path.isfile(self.environ['PATH_INFO'][1:]):  # Getting rid of the starting "/" to make it relative
+			authorised_ext = {".css" : "text/css", ".js" : "application/x-javascript"}
 			ext = os.path.splitext(self.environ['PATH_INFO'])[1]
 
 			if ext in authorisedExt:
-				self.http.headers['Content-Type'] = authorisedExt[ext] + "; charset=utf-8"
+				self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
+				
 				yield open(self.environ['PATH_INFO'][1:]).read(1048576)
 				raise StopIteration
 			else:
 				raise HTTPException.error404
 		elif self.environ['PATH_INFO'].rstrip('/') != '':
 			raise HTTPException.error404
-
-
-
+		
 		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # In the future, will use NotStrictList class.
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
-
+			
+			# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping?
+			
 			# TODO: Finish to generate RSS automatically
 			yield BetterFormat().format(
 				rss_template,
 				name='Hello World',
-				src='http://devutopia.net/helloworld.py?do=RSS',
+				src_html='http://devutopia.net/',  # TODO: Make dynamic
+				src='http://devutopia.net/?do=RSS',  # TODO: Make dynamic
 				descript='Hello World in several langages',
 				items=BetterFormat().format(
 					rss_item,
