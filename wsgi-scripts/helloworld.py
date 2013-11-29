@@ -30,11 +30,11 @@ import time
 import urllib.parse
 import uuid
 
-# TODO: Should we changed official contact info? Creating an offical contact adress? I guess it's ok for now.
+# TODO: Make an offical address (*@devutopia.net) + Make dynamic in the .tpl (instead of being hardcoded)
 # Comment ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
 __author__ = "JeromeJ"
-__contact__ = "e-warning [this would be an amphora symbol but we don't like spambots] hotmail.com"
-__website__ = "http://www.olissea.com/"
+__contact__ = "devutopia.devs [this would be an amphora symbol but we don't like spambots] olissea.net"
+__website__ = "http://devutopia.net/"
 __licence__ = "Copy left: Share-alike"
 
 

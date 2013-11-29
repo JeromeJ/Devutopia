@@ -8,7 +8,7 @@
 	<body>
 		<header id="header">
 			<div id="status"><strong><span class="WIP">WIP</span> Work In Progress</strong>, <em>come back later!</em></div><!-- # TODO: Remove that? When? -->
-			<div id="extra"><em>Contact me if interested!</em><br /><strong>Contact:</strong> e-warning [at symbol] hotmail.com</div><!-- # TODO: See tag:devutopia.net,2013-11-03:Topic-changing-contact-info (in helloworld.py) -->
+			<div id="extra"><em>Contact us if interested!</em><br /><strong>Contact:</strong> devutopia.devs [at symbol] olissea.net</div><!-- # TODO: See tag:devutopia.net,2013-11-03:Topic-changing-contact-info (in helloworld.py) -->
 			<div id="title"><strong><span class="dev">Dev</span><span class="utopia">utopia</span></strong></div>
 		</header>
 
@@ -26,7 +26,7 @@
 			</section>
 			
 			<section id="helloWorld">
-				<h2>Hello World</h1>
+				<h2>Hello World</h2>
 				{langs}
 				…<br />
 				<button>Add a lang</button> <em>or</em> edit one… (<em>Not implemented yet… Soon!</em>)
