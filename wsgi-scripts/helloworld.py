@@ -184,7 +184,7 @@ moto = [
 		"This project is YOURS. Bring your ideas, opinions, code, content, …"),
 ]
 
-template = BetterFormat().format(open('tpl/index.tpl').read(4096),
+template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
 	# Can't use '<gen> if helloword else "No lang registered yet"' because helloworld returns True (as it is a generator) even if it will not yield anything (which was confusing at first but totaly normal)
 	# So we are using "or" instead
 	langs='\n'.join(
@@ -223,8 +223,7 @@ rss_item = """\
 <entry>
 	<title>{descript}</title>
 	<id>tag:devutopia.net,{id}</id>
-	<link rel="alternate" type="text/html"
->{url}</link>
+	<link rel="alternate" type="text/html">{url}</link>
 	<description>{msg}</description>
 	<published>{date}</published>
 	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! (not published) -->
@@ -363,6 +362,7 @@ class application:
 			yield HTTP_exception(self.environ).msg.encode('utf-8')
 
 	def main(self):
+		
 		# To be able to run in local:
 		if os.path.isfile(self.environ['PATH_INFO'][1:]):  # Getting rid of the starting "/" to make it relative
 			authorised_ext = {".css": "text/css", ".js": "application/x-javascript"}
@@ -371,7 +371,7 @@ class application:
 			if ext in authorised_ext:
 				self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
 
-				yield open(self.environ['PATH_INFO'][1:]).read(1048576)
+				yield open(self.environ['PATH_INFO'][1:], open="utf-8").read(1048576)
 				raise StopIteration
 			else:
 				raise HTTPException.error404
