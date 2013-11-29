@@ -23,7 +23,7 @@ import logging  # TODO: Change the format of logging so that it includes the dat
 import operator
 import os
 import re
-import sqlite3
+# import sqlite3 # Not used
 import string
 # import sys # Not used
 import time
@@ -165,7 +165,7 @@ try:
 except OSError:
 	# TODO: Try to create the file # Or only try to create it when needed? # Hmm?
 	helloworld = []
-	logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.") # TODO: Check if "→" displays well in the log (I guess so)
+	logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.")  # TODO: Check if "→" displays well in the log (I guess so)
 
 
 # TODO: TO BE FINISHED YET
@@ -190,10 +190,10 @@ template = BetterFormat().format(open('tpl/index.tpl').read(4096),
 	langs='\n'.join(
 		'<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(
 			*cgi.escape(line[:-1]).split(None, 1))
-		for line in helloworld) # Code ID: tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
+		for line in helloworld)  # Code ID: tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
 	or "<em>No lang registered yet!</em>",
 
-	moto='<li>'+'</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto)+'</li>')
+	moto='<li>' + '</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto) + '</li>')
 
 # Not used
 # test = """\
@@ -321,7 +321,7 @@ class HTTPManager:
 
 class application:
 	"""Main WSGI app."""
-	
+
 	# TODO: Change the docstring? Call it "presentation" or "homepage"? Or let it be the "Helloworld app" even though it will probably eventually not be the "homepage app" anymore? (Maybe create the "homepage app" and set it so "homepage_app = hello_world_app"?)
 
 	def __init__(self, environ, start_response):
@@ -363,27 +363,26 @@ class application:
 			yield HTTP_exception(self.environ).msg.encode('utf-8')
 
 	def main(self):
-		
 		# To be able to run in local:
 		if os.path.isfile(self.environ['PATH_INFO'][1:]):  # Getting rid of the starting "/" to make it relative
-			authorised_ext = {".css" : "text/css", ".js" : "application/x-javascript"}
+			authorised_ext = {".css": "text/css", ".js": "application/x-javascript"}
 			ext = os.path.splitext(self.environ['PATH_INFO'])[1]
 
 			if ext in authorised_ext:
 				self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
-				
+
 				yield open(self.environ['PATH_INFO'][1:]).read(1048576)
 				raise StopIteration
 			else:
 				raise HTTPException.error404
 		elif self.environ['PATH_INFO'].rstrip('/') != '':
 			raise HTTPException.error404
-		
+
 		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # In the future, will use NotStrictList class.
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
-			
+
 			# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping?
-			
+
 			# TODO: Finish to generate RSS automatically
 			yield BetterFormat().format(
 				rss_template,
@@ -406,14 +405,14 @@ class application:
 		# yield __import__('sys').version+'<br />'
 		# yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
 
-		minutes = int(time.mktime(datetime.datetime.now().timetuple())/60 - time.mktime(started_on.timetuple())/60) # Timestamp in minutes of now minus timestamp of minutes since when that instance started
+		minutes = int(time.mktime(datetime.datetime.now().timetuple()) / 60 - time.mktime(started_on.timetuple()) / 60)  # Timestamp in minutes of now minus timestamp of minutes since when that instance started
 
 		yield BetterFormat().format(template,
 			# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
 			# test='Nothing to see here 😒',
 			# TODO: Should be put in the test variable? (helloworld.py scope)
 			# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting )
-			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(name=cgi.escape(instance_name), minutes=minutes, s='s'*(minutes > 1)))   # +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
+			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(name=cgi.escape(instance_name), minutes=minutes, s='s' * (minutes > 1)))  # +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
 
 if __name__ == '__main__':
 	# Then run wsgiref for local testing
