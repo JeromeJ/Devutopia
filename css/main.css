@@ -9,13 +9,94 @@
 	font-family: 'Symbola';
 	src: url('http://users.teilar.gr/~g1951d/Symbola.ttf');
 }
-
 .hearts{font-family: 'Symbola'} */
 
-html, body { height: 100% }
+@font-face{
+	font-family: 'GreatVibes';
+	src: url('GreatVibes-Regular.otf');
+}
 
-body { margin: 8px } /* Default Firefox value */
-#foot { margin-left: -8px } /* Negate it! */
+*{
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	outline: none;
+}
+
+html, body { 
+	height: 100%;
+}
+
+body { 
+	margin: 0;
+	background-color: hsl(0,0%,95%);
+}
+
+/* ===== HEADER ===== */
+
+#header{
+	padding: 1em;
+	background-color: hsl(0,0%,85%);
+	background-image: linear-gradient(hsl(0,0%,95%), hsl(0,0%,80%));
+	box-shadow: 0 2px 8px hsla(0,0%,0%, 0.25), 
+				inset 0 -1px 0px hsla(0,0%,100%, 0.6);
+	border-bottom: 1px solid hsla(0,0%,0%, 0.35);
+}
+
+.dev{
+	font-family: sans-serif;
+}
+
+.utopia{
+	/*font-family: "GreatVibes";*/
+	font-style: italic;
+}
+
+
+#title {
+	font-size: 3.5em;
+	text-align: center;
+}
+
+#status {
+	padding: 1em;
+	float: left;
+	line-height: 2
+}
+
+.WIP { 
+	color: white;
+	text-shadow: 1px 1px black;
+	font-weight: bold;
+	padding: 0.4em;
+	border-radius: 4px;
+	background-color: red;
+	background-image: linear-gradient(hsl(0,95%, 60%), hsl(0,80%,47%));
+	box-shadow: 0 0 1px white;	
+}
+
+#extra {
+	padding: 1em;
+	float: right;
+}
+
+/* ===== MAIN CONTAINER ===== */
+
+#catchphrase{
+	font-size: 2.5em;
+	font-weight: bold;
+	font-style: italic;
+	text-align: center;
+}
+
+#main{
+	padding: 1.5em;
+}
+
+/* == */
+
+#foot { 
+	margin-left: -8px; 
+}
 
 #foot {
 	background-color: white;
@@ -25,24 +106,16 @@ body { margin: 8px } /* Default Firefox value */
 	border-top: 1.5px solid black;
 }
 
-#status {
-	float: left;
-	line-height: 2
-}
-.WIP { color: red }
 
-#title {
-	font-size: 3em;
-	font-style: italic;
-	text-align: center;
-}
 
 #descript, #extra { text-align: center }
-#extra { float: right }
 
 .clear { clear: both }
 
-#main{ width: 100%;}
+#main{ 
+	width: 100%;
+	color: hsl(0,0%,20%);
+	}
 
 #main > tbody > tr { vertical-align: top }
 #mainContent { width: 50%; }
