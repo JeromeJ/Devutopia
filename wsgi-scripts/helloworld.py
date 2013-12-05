@@ -18,7 +18,7 @@ to bring a decentralized-like plateform for everybody and every type of content.
 import cgi
 import collections
 import datetime
-# import functools  # Not used
+import functools
 import logging  # TODO: Change the format of logging so that it includes the date [minor]
 import operator
 import os
@@ -130,6 +130,38 @@ class BetterFormat(string.Formatter):
 		return super().format_field(v, pattern)
 
 
+class Tag:
+	"""Utility class to ease the creation of URI tags."""
+	
+	DEFAULT_AUTHORITY_NAME = None  # To be manually set
+	
+	# Arguments are named according to RFC 4151.
+	# Although, fragment (what comes after the "#") isn't implemented
+	# → Directly put into specific (eg: specific="myExample#fragment")
+	def __init__(self, date, specific, authority_name=None):
+		self.authority_name = authority_name or Tag.DEFAULT_AUTHORITY_NAME
+		self.date = date
+		self.specific = specific 
+	
+	def __str__(self):
+		
+		# TODO: Should we tag object immutable (would be more logical)? [normal]
+		# → Plus, we could raise the ValueError on the creation rather than when displaying (it's hard to debug).
+		# (→ Then, elements should be stored as _private or should we inherit a NamedTuple? (I like the second I think))
+		
+		try:
+			assert self.authority_name is not None
+		except AssertionError:
+			raise ValueError("Must set an authority name. Cannot generate tag.")
+		
+		return "tag:{authority_name},{date}:{specific}".format(
+			authority_name=self.authority_name,
+			date=self.date,
+			specific=self.specific
+		)
+
+Tag.DEFAULT_AUTHORITY_NAME = 'devutopia.net'
+
 class DynamicMapping(dict):
 	"""
 	Provide a special dict to ease the formatting of strings for displaying on the website.
@@ -231,7 +263,7 @@ rss_template = """\
 	<!--<author><name></name><uri></uri></author>-->
 	<link rel="alternate" type="text/html" href="{src_html}" />
 	<link rel="self" href="{src}" />
-	<id>tag:devutopia.net,2013-09-22:helloworldfeed</id>
+	<id>{id}</id>
 	<!--<description>{descript}</description>-->
 	{items}
 </feed>\
@@ -242,7 +274,8 @@ rss_template = """\
 rss_item = """\
 <entry>
 	<title>{descript}</title>
-	<id>tag:devutopia.net,{id}</id>
+	<!--<author></author>-->
+	<id>{id}</id>
 	<link rel="alternate" type="text/html">{url}</link>
 	<description>{msg}</description>
 	<published>{date}</published>
@@ -442,19 +475,24 @@ class application:
 			# TODO: Finish to generate RSS automatically [important] (Status: Started)
 			yield BetterFormat().format(
 				rss_template,
-				name='Hello World',
-				src_html='http://devutopia.net/',  # TODO: Make dynamic [normal]
-				src='http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
-				descript='Hello World in several langages',
-				items=BetterFormat().format(
-					rss_item,
-					descript='[fr] Bonjour tout le monde',
-					id='2013-09-22:helloworldentry-in_french-by_devutopia',
-					url='http://devutopia.net/helloworld.py?itemid=1',
-					# TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
-					msg='French version.<br />\nAdded by devutopia.',
-					date='2013-09-22'
-				)
+				**{
+					'id': Tag('2013-09-22', 'helloworldfeed'),
+					'name': 'Hello World',
+					'src_html': 'http://devutopia.net/',  # TODO: Make dynamic [normal]
+					'src': 'http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
+					'descript': 'Hello World in several langages',
+					'items': BetterFormat().format(
+						rss_item,
+						**{
+							'descript': '[fr] Bonjour tout le monde',
+							'id': Tag('2013-09-22', 'helloworldentry-in_french-by_devutopia'),
+							'url': 'http://devutopia.net/helloworld.py?itemid=1',
+							# TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+							'msg': 'French version.<br />\nAdded by devutopia.',
+							'date': '2013-09-22'
+						}
+					)
+				}
 			)
 
 			raise StopIteration
