@@ -18,7 +18,7 @@ to bring a decentralized-like plateform for everybody and every type of content.
 import cgi
 import collections
 import datetime
-import functools
+# import functools  # Not used
 import logging  # TODO: Change the format of logging so that it includes the date [minor]
 import operator
 import os
@@ -33,7 +33,7 @@ import uuid
 # TODO: Make an offical address (*@devutopia.net) [normal]
 # COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
 
-# TODO: Make the email address being put dynamicly in the .tpl (instead of being hardcoded) [normal]
+# TODO: Make the email address being put dynamically in the .tpl (instead of being hardcoded) [normal]
 
 __author__ = "JeromeJ"
 __contact__ = "devutopia.devs [this would be an amphora symbol but we don't like spambots] olissea.net"
