@@ -253,14 +253,18 @@ template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(40
 # Ressources:  # TODO: Open a GitHub's issue instead? ([important]: Talking about the question) (→ Thinking so, but idk)
 # * http://www.diveinto.org/python3/xml.html
 # * http://www.tutorialspoint.com/rss/what-is-atom.htm
+# * http://atomenabled.org/developers/syndication/
 # * …
+# Important notes:
+# → "A feed may have multiple author elements. A feed must contain at least one author element unless all of the entry elements contain at least one author element."
+#	→ I propose to not check that with Python but stick to that note and try to respect it.
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>{name}</title>
 	<!--<subtitle></subtitle>-->
 	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! [important] -->
-	<!--<author><name></name><uri></uri></author>-->
+	<!--<author><name></name></author>-->
 	<link rel="alternate" type="text/html" href="{src_html}" />
 	<link rel="self" href="{src}" />
 	<id>{id}</id>
@@ -274,7 +278,7 @@ rss_template = """\
 rss_item = """\
 <entry>
 	<title>{descript}</title>
-	<!--<author></author>-->
+	<!--<author><name></name></author>-->
 	<id>{id}</id>
 	<link rel="alternate" type="text/html">{url}</link>
 	<description>{msg}</description>
