@@ -18,20 +18,23 @@ to bring a decentralized-like plateform for everybody and every type of content.
 import cgi
 import collections
 import datetime
-# import functools # Not used
-import logging  # TODO: Change the format of logging so that it includes the date
+# import functools  # Not used
+import logging  # TODO: Change the format of logging so that it includes the date [minor]
 import operator
 import os
 import re
-# import sqlite3 # Not used
+# import sqlite3  # Not used
 import string
-# import sys # Not used
+# import sys  # Not used
 import time
 import urllib.parse
 import uuid
 
-# TODO: Make an offical address (*@devutopia.net) + Make dynamic in the .tpl (instead of being hardcoded)
-# Comment ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
+# TODO: Make an offical address (*@devutopia.net) [normal]
+# COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
+
+# TODO: Make the email address being put dynamicly in the .tpl (instead of being hardcoded) [normal]
+
 __author__ = "JeromeJ"
 __contact__ = "devutopia.devs [this would be an amphora symbol but we don't like spambots] olissea.net"
 __website__ = "http://devutopia.net/"
@@ -61,7 +64,7 @@ class cached_property(object):
 	memory leakage.
 	"""
 
-	# Source: http://www.toofishes.net/blog/python-cached-property-decorator/ # TODO: Should it be a metada? (like __source__)
+	# Source: http://www.toofishes.net/blog/python-cached-property-decorator/  # TODO: Should it be a metada? (like __source__) [minor]
 
 	# This decorator allows to create properties that get properly generated only when accessed
 	# for the first time (without requiring to create a dynamic property that would have to check
@@ -80,7 +83,7 @@ class cached_property(object):
 		return result
 
 
-# TODO: Question: Couldn't it use @staticmethod instead?
+# TODO: Question: Couldn't it use @staticmethod instead? [normal]
 class BetterFormat(string.Formatter):
 	"""
 	Introduce better formattings.
@@ -155,24 +158,32 @@ class DynamicMapping(dict):
 started_on = datetime.datetime.now()
 
 try:
-	# TODO: Wont this implicitely call ".read()"? (when we iter over it, see tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter )
-	# Then, it shouldn't be let paremeter-less, right?
+	# TODO: Wont this implicitely call ".read()" when we iter over it? ([minor]? or normal)
+	# See tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
+	
+	# Then, if so, it shouldn't be let paremeter-less, right?
 	# → Check the opener parameter of http://docs.python.org/3.3/library/functions.html#open
+	# → Also opened an issue on GitHub with more info: https://github.com/JeromeJ/Devutopia/issues/1
 
-	# TODO: Also find a way to embed that into a "with" block as it should?
+	# TODO: Also find a way to embed that into a "with" block as it should? [normal]
 
-	helloworld = open('data/helloworld.txt', encoding="utf-8")
+	hello_world = open('data/helloworld.txt', encoding="utf-8")
 except OSError:
-	# TODO: Try to create the file # Or only try to create it when needed? # Hmm?
-	helloworld = []
-	logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.")  # TODO: Check if "→" displays well in the log (I guess so)
+	# TODO: Try to create the file? [minor]
+	# Maybe only try to create it when needed?  # On saving?
+	
+	hello_world = []  # Default value
+	logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.")  # TODO: Check if "→" displays well in the log (Guessing so) [minor]
 
+# TODO: Finish to setup the SQLite db alternative ([important] ?) (Status: started)
 
-# TODO: TO BE FINISHED YET
 # HW_conn = sqlite3.connect('data/helloworld.db')
 # c = HW_conn.cursor()
 # c.execute('CREATE TABLE IF NOT EXISTS langs (id INTEGER PRIMARY KEY, author INTEGER, lang_name VARCHAR, translation VARCHAR, added DATE)')
-# End of not yet finished code
+
+# TODO: Improve the moto by making it more accesible? ([normal]? or minor)
+# → Make it more accessible to the man in the street? (dat idiom though… Hope it's the right one. I meant "monsieur/madame tout le monde")
+# And let geeky explanations available for geeks (but as extra info. It shouldn't come confuse everyday ppl (valid alternative of "dat idiom"?))
 
 moto = [
 	("Bring the advantages of programming's world decentralized systems (like git, …) to the whole world.",),
@@ -180,22 +191,25 @@ moto = [
 	("Let everyone bring content / edits / ideas / … in a non intrusive way:",
 		"Just like if you created your clone of a project and modify it."),
 
-	("These rules also apply to this very project :",
+	("These rules also apply to this very project:",
 		"This project is YOURS. Bring your ideas, opinions, code, content, …"),
 ]
 
+# TODO: Hey, should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
+# TODO: Why 4096 if not "why not?"? [minor]
 template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
-	# Can't use '<gen> if helloword else "No lang registered yet"' because helloworld returns True (as it is a generator) even if it will not yield anything (which was confusing at first but totaly normal)
-	# So we are using "or" instead
+	# Cannot use 'expr if hello_world else "No lang registered yet"' because hello_world returns True (as it is a generator)
+	# Even if it will not yield anything (which was confusing at first but totaly normal).
+	# → Using the "or" trick instead.
 	langs='\n'.join(
 		'<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(
 			*cgi.escape(line[:-1]).split(None, 1))
-		for line in helloworld)  # Code ID: tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
+		for line in hello_world)  # CODE ID: tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
 	or "<em>No lang registered yet!</em>",
 
 	moto='<li>' + '</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto) + '</li>')
 
-# Not used
+# # Not used
 # test = """\
 # <strong>GET:</strong> {get}<br />
 # <strong>POST:</strong> {post}<br /><br />
@@ -203,13 +217,17 @@ template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(40
 # <strong>Method:</strong> {method}\
 # """
 
-# TODO: Continuing studying ATOM feeds.
+# TODO: Continuing studying ATOM feeds. [important] (Status: Started)
+# Ressources:  # TODO: Open a GitHub's issue instead? ([important]: Talking about the question) (→ Thinking so, but idk)
+# * http://www.diveinto.org/python3/xml.html
+# * http://www.tutorialspoint.com/rss/what-is-atom.htm
+# * …
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>{name}</title>
 	<!--<subtitle></subtitle>-->
-	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! -->
+	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! [important] -->
 	<!--<author><name></name><uri></uri></author>-->
 	<link rel="alternate" type="text/html" href="{src_html}" />
 	<link rel="self" href="{src}" />
@@ -219,6 +237,8 @@ rss_template = """\
 </feed>\
 """
 
+# TODO: Also make so that, if {msg} has more than one line, then it automatically becomes a block [normal]
+# COMMENT ID: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting
 rss_item = """\
 <entry>
 	<title>{descript}</title>
@@ -226,11 +246,12 @@ rss_item = """\
 	<link rel="alternate" type="text/html">{url}</link>
 	<description>{msg}</description>
 	<published>{date}</published>
-	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! (not published) -->
+	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! (not published) [important] -->
 	<!--<summary type="html"></summary>-->
 	<content type="html"></content>
-</entry>"""  # TODO: Also make so that, if {msg} has more than one line, then it automatically becomes a block (tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
-# TODO: Isn't rel="alternate" by default in that case? (Couldn't specify a link to a RSS entry, right?)
+</entry>"""
+# TODO: Isn't 'rel="alternate"' by default in that case? (Couldn't specify a link to a RSS entry, right?) [minor]
+# → I think so but I also think it should be indicated anyway
 
 
 class HTTPException(Exception):
@@ -247,6 +268,10 @@ class HTTPException(Exception):
 		return self
 
 
+# TODO: Improve by making more dynamic? (like the charset? etc) [normal]
+# TODO: Using a template (right?) [normal]
+# TODO: Also implement other errors… [normal]
+# …Ideally all based on the same base template: Shouldn't it be handled by the HTTPException class then?)
 HTTPException.error404 = HTTPException('404 Not Found', """
 <!DOCTYPE html>
 <html>
@@ -261,29 +286,34 @@ HTTPException.error404 = HTTPException('404 Not Found', """
 </html>\
 """)
 
+# TODO: Use it. Maybe improving it first (+ see Args class) [normal]
 
-class NotStrictList(list):  # TODO: Use it!? Maybe improving it first (+ see Args class)
-	"""Offer the possibility to normalize data automatically when testing for the presence of some data in that list."""
-	# TODO: Should/could it be about sequences in general?
+# Not used (Note: Automatically commented using the Ctrl+e command in Geany)
+#~ class NotStrictList(list):
+	#~ """Offer the possibility to normalize data automatically when testing for the presence of some data in that list."""
+	#~ # TODO: Should/could it be about sequences in general? [normal]
+#~ 
+	#~ default_normalizer = operator.methodcaller('lower')
+#~ 
+	#~ def __contains__(self, item, strict=False, normalizer=None):
+		#~ if strict:
+			#~ return super().__contains__(item)
+#~ 
+		#~ if normalizer is None:
+			#~ normalizer = NotStrictList.default_normalizer
+#~ 
+		#~ return normalizer(item) in map(normalizer, self)
 
-	default_normalizer = operator.methodcaller('lower')
 
-	def __contains__(self, item, strict=False, normalizer=None):
-		if strict:
-			return super().__contains__(item)
-
-		if normalizer is None:
-			normalizer = NotStrictList.default_normalizer
-
-		return normalizer(item) in map(normalizer, self)
-
-
-# TODO: Finish it too…
+# TODO: To be finished too! [normal]
 # Will probably be used to automatically do what is needed for args and post? (for instance changing them into a dict of NonStrictList?)
-class Args(dict):
+# Instead to be directly handled in the main class
 
-	def __init__(self, args):
-		pass
+# Not used (Note: Automatically commented using the Ctrl+e command in Geany)
+#~ class Args(dict):
+#~ 
+	#~ def __init__(self, args):
+		#~ pass
 
 
 class HTTPManager:
@@ -294,8 +324,10 @@ class HTTPManager:
 	headers = {
 		'Content-Type': 'text/html; charset=utf-8',
 
-		# TODO: Idea: Make so that when editting Content-Type
-		# it automatically becomes '{content-type}; charset={charset}'
+		# TODO: Idea: Make so that when editting Content-Type… [normal]
+		# …it automatically becomes '{content-type}; charset={charset}' (or something like that ;) )
+		# COMMENT ID: tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset
+		# → Handle them automatically
 	}
 
 	committed = False
@@ -321,7 +353,10 @@ class HTTPManager:
 class application:
 	"""Main WSGI app."""
 
-	# TODO: Change the docstring? Call it "presentation" or "homepage"? Or let it be the "Helloworld app" even though it will probably eventually not be the "homepage app" anymore? (Maybe create the "homepage app" and set it so "homepage_app = hello_world_app"?)
+	# TODO: Change the docstring? ([normal]? or minor)
+	# Calling it "presentation" or "homepage"?
+	# Or let it be the "Helloworld app" even though it will probably eventually not be the "homepage app" anymore?
+	# Maybe create the "homepage app" and set it so "homepage_app = hello_world_app"?
 
 	def __init__(self, environ, start_response):
 		self.environ = environ
@@ -329,20 +364,28 @@ class application:
 
 		self.http = HTTPManager(start_response)
 
-	# TODO: Handle the two methods below by the class Args?
+	# TODO: Handle the two methods below with the Args class? [normal]
 	@cached_property
 	def args(self):
 		return collections.defaultdict(list, urllib.parse.parse_qs(self.environ['QUERY_STRING']))
 
 	@cached_property
 	def post(self):
-		return collections.defaultdict(list, urllib.parse.parse_qs(self.environ['wsgi.input'].readline().decode('UTF-8'), True) if self.environ["REQUEST_METHOD"] == 'POST' else {})
+		# TODO: Make the encoding/decoding be dynamic instead of hardcoded? [normal]
+		# → Which fool wouldn't use UTF-8 though? (Wouldn't it be more 'right' anyway)
+		# → Erm, though… I think that this has nothing to do with decoding: (EDIT: Indeed ;) )
+		# → Cause decoding is depending on the ressources being opened (right?)
+		# → But, in the other hand, the encoding, mainly if meant to be 'printed out' (or returned by WSGI) then,
+		# → maybe it should be handled automatically ;)
+		# COMMENT ID: tag:devutopia.net,2013-12-05:dynamic-encoding-type#instead_of_hardcoded
+		return collections.defaultdict(list, urllib.parse.parse_qs(self.environ['wsgi.input'].readline().decode('utf-8'), True) if self.environ["REQUEST_METHOD"] == 'POST' else {})
 
 	def __iter__(self):
 		try:
 			# As "yield from" is only avaible from Python 3.3, this is done manually
 
-			# TODO: We can't put that in a decorator right? I think I tried and finished with that only solution: __iter__ is kind of the decorator for self.main
+			# TODO: We can't put that in a decorator right? ([minor] as it works like that anyway and isn't too hard to understand, I think)
+			# I think I tried and finished with that only solution: __iter__ is kind of the decorator for self.main
 
 			main_gen = self.main()
 
@@ -350,15 +393,19 @@ class application:
 
 			# Default commit (if none has been sent yet)
 			self.http.commit()
-
+			
+			# TODO: Make sure the following note is right ([minor]? or normal)
 			# Note: I don't think anything is *sent back* (generator.send and "foo = (yield bar)") to the main app generator (by WSGI itself), so I don't handle that here…
+			# Also see tag:devutopia.net,2013-12-05:dynamic-encoding-type#instead_of_hardcoded
 			yield first_item.encode('utf-8')
 
 			for el in main_gen:
+				# TODO: See tag:devutopia.net,2013-12-05:dynamic-encoding-type#instead_of_hardcoded [normal]
 				yield el.encode('utf-8')
 
 		except HTTPException as HTTP_exception:
 			HTTPManager(self.start_response).exception(HTTP_exception)
+			# TODO: See tag:devutopia.net,2013-12-05:dynamic-encoding-type#instead_of_hardcoded [normal]
 			yield HTTP_exception(self.environ).msg.encode('utf-8')
 
 	def main(self):
@@ -369,54 +416,85 @@ class application:
 			ext = os.path.splitext(self.environ['PATH_INFO'])[1]
 
 			if ext in authorised_ext:
+				# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
 				self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
 
-				yield open(self.environ['PATH_INFO'][1:], encoding="utf-8").read(1048576)
+				yield open(self.environ['PATH_INFO'][1:], encoding="utf-8").read(1048576) # Funky arbitrary number, right?
 				raise StopIteration
 			else:
 				raise HTTPException.error404
 		elif self.environ['PATH_INFO'].rstrip('/') != '':
 			raise HTTPException.error404
 
-		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # In the future, will use NotStrictList class.
+		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # TODO: Use NotStrictList class [normal]
+			# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
 			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
 
-			# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping?
+			# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping? [normal]
+			
+			# TODO: Errrm, could/should we use two level of "[ normal ]" TODO thing? [important]
+			# (NOTE: Put spaces so that they aren't matched when searching for them with Ctrl+F as actual TODO things)
+			# What we currently have (for [ normal ] and above)
+			# → [ normal ],
+			# → [ important ] (seems already too strong),
+			# → [ critic ] (Erm, if there is something critic, shouldn't it be fixed immediately? ;D and so, this tag shouldn't be used often ^^)
 
-			# TODO: Finish to generate RSS automatically
+			# TODO: Finish to generate RSS automatically [important] (Status: Started)
 			yield BetterFormat().format(
 				rss_template,
 				name='Hello World',
-				src_html='http://devutopia.net/',  # TODO: Make dynamic
-				src='http://devutopia.net/?do=RSS',  # TODO: Make dynamic
+				src_html='http://devutopia.net/',  # TODO: Make dynamic [normal]
+				src='http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
 				descript='Hello World in several langages',
 				items=BetterFormat().format(
 					rss_item,
 					descript='[fr] Bonjour tout le monde',
 					id='2013-09-22:helloworldentry-in_french-by_devutopia',
 					url='http://devutopia.net/helloworld.py?itemid=1',
-					msg='French version.<br />\nAdded by devutopia.',  # TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+					# TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+					msg='French version.<br />\nAdded by devutopia.',
 					date='2013-09-22'
 				)
 			)
 
 			raise StopIteration
-
+		
+		# TODO: What to do with the junks? ([normal]? or minor)
+		# → Should get rid of some
+		# → Could(/should?) keep some but at least tidy up things? group them?
+		# → idk…
+		# COMMENT ID: tag:devutopia.net,2013-12-05:junkomania-handling
+		
+		# # Some junk :) ([fr] "syllogomanie"; [en] "compulsive hoarding")
 		# yield __import__('sys').version+'<br />'
 		# yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
-
-		minutes = int(time.mktime(datetime.datetime.now().timetuple()) / 60 - time.mktime(started_on.timetuple()) / 60)  # Timestamp in minutes of now minus timestamp of minutes since when that instance started
+		
+		# Timestamp in minutes of now minus timestamp of minutes since when that instance started
+		minutes = int(time.mktime(datetime.datetime.now().timetuple()) / 60 - time.mktime(started_on.timetuple()) / 60)
 
 		yield BetterFormat().format(template,
+			# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
 			# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
-			# test='Nothing to see here 😒',
-			# TODO: Should be put in the test variable? (helloworld.py scope)
-			# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting )
-			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(name=cgi.escape(instance_name), minutes=minutes, s='s' * (minutes > 1)))  # +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
+			# test='Nothing to see here 😒', # Don't delete me :p I'm a fancy smiley and I don't want to disappear, let me be!
+			# TODO: Should be put in the test variable? (helloworld.py scope) [minor]
+			
+			# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting ) [normal]
+			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(\
+				name=cgi.escape(instance_name),
+				minutes=minutes,
+				s='s' * (minutes > 1)
+			)
+		)
+		# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
+		# +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
 
 if __name__ == '__main__':
+	# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
+	# → That is less junk though, important pieces of information here.
+	# TODO: Make a specific comment/TODO-thing for this type o' content or just the comment below? ([minor]? or normal)
+	
 	# Then run wsgiref for local testing
-	# → I don't know if wsgiref handles multiple instances (and if so, by its own) (→ I guess/hope so) # TODO: Investiguate
+	# → I don't know if wsgiref handles multiple instances (and if so, by its own) (→ I guess/think/hope so)  # TODO: Investiguate/make sure [minor]
 	# → I don't know if I have to handle the request myself if using wsgiref (→ Yep, see answer below)
 
 	# Answer: "If you want to serve multiple applications on a single host and port, you should create a WSGI application that parses PATH_INFO to select which application to invoke for each request. (E.g., using the shift_path_info() function from wsgiref.util.)"
