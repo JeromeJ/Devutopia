@@ -261,14 +261,14 @@ template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(40
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
+	<!--<author><name></name></author>-->
+	<!--<category term=""></category>-->
+	<id>{id}</id>
+	<link href="{src_html}" type="text/html" /><!-- Default rel="alternate" -->
+	<link href="{src}" rel="self" />
 	<title>{name}</title>
 	<!--<subtitle></subtitle>-->
 	<!--<updated></updated>--><!-- # TODO: Is REQUIRED!! [important] -->
-	<!--<author><name></name></author>-->
-	<link rel="alternate" type="text/html" href="{src_html}" />
-	<link rel="self" href="{src}" />
-	<id>{id}</id>
-	<!--<description>{descript}</description>-->
 	{items}
 </feed>\
 """
