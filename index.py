@@ -25,10 +25,18 @@ import os
 import re
 # import sqlite3  # Not used
 import string
-# import sys  # Not used
+import sys
 import time
 import urllib.parse
 import uuid
+
+sys.path.append('/usr/local/lib/python3.3/dist-packages/')
+from flask import Flask
+
+app = Flask(__name__)
+
+# TODO: I should write a reminder on how I, finally, managed to install that 'stupid' Flask for Python 3 (sorry but it was a pain in the ass for unlucky me…) [important]
+# TODO: Fix the architecture so I don't need to write wsgi-scripts in front of paths anymore (it was just a lazy hack anyway) [normal]
 
 # TODO: Make an offical address (*@devutopia.net) [normal]
 # COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
@@ -199,7 +207,7 @@ try:
 
 	# TODO: Also find a way to embed that into a "with" block as it should? [normal]
 
-	hello_world = open('data/helloworld.txt', encoding="utf-8")
+	hello_world = open('wsgi-scripts/data/helloworld.txt', encoding="utf-8")
 except OSError:
 	# TODO: Try to create the file? [minor]
 	# Maybe only try to create it when needed?  # On saving?
@@ -229,7 +237,7 @@ moto = [
 
 # TODO: Hey, should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
 # TODO: Why 4096 if not "why not?"? [minor]
-template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
+template = BetterFormat().format(open('wsgi-scripts/tpl/index.tpl', encoding="utf-8").read(4096),
 	# Cannot use 'expr if hello_world else "No lang registered yet"' because hello_world returns True (as it is a generator)
 	# Even if it will not yield anything (which was confusing at first but totaly normal).
 	# → Using the "or" trick instead.
@@ -386,7 +394,7 @@ class HTTPManager:
 
 			self.committed = True
 
-
+@app.route("/")
 class application:
 	"""Main WSGI app."""
 
@@ -541,13 +549,7 @@ if __name__ == '__main__':
 
 	# Answer: "If you want to serve multiple applications on a single host and port, you should create a WSGI application that parses PATH_INFO to select which application to invoke for each request. (E.g., using the shift_path_info() function from wsgiref.util.)"
 
-	from wsgiref.simple_server import make_server
-
-	httpd = make_server('', 8000, application)
-
-	print('Launching the server in local mode... Hello!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it? (Or you can "modify" the Windows environnement but it's not a good idea and not perfect)
-
 	try:
-		httpd.serve_forever()
+		app.run('devutopia.net', 80)
 	except KeyboardInterrupt:
-		print('Shuting down... Good bye!')
+		print('Shuting down... Good bye!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it? (Or you can "modify" the Windows environnement but it's not a good idea and not perfect)
