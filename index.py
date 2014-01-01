@@ -605,6 +605,6 @@ if __name__ == '__main__':
 	app.debug = True
 
 	try:
-		app.run('127.0.0.1', 8000)
+		app.run('devutopia.net', 80)
 	except KeyboardInterrupt:
 		print('Shuting down... Good bye!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it? (Or you can "modify" the Windows environnement but it's not a good idea and not perfect)
