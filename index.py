@@ -19,7 +19,7 @@ import cgi
 import collections
 import datetime
 import logging  # TODO: Change the format of logging so that it includes the date [minor]
-import operator
+# import operator  # Not used
 import os
 import re
 # import sqlite3  # Not used
@@ -60,6 +60,7 @@ __licence__ = "Copy left: Share-alike"
 app = Flask(__name__)
 
 # Decorator to make Flask accept generators
+
 
 @wraps(app.route)
 def route_accept_generators(*args, **kwargs):
@@ -182,28 +183,28 @@ class BetterFormat(string.Formatter):
 
 class Tag:
 	"""Utility class to ease the creation of URI tags."""
-	
+
 	DEFAULT_AUTHORITY_NAME = None  # To be manually set
-	
+
 	# Arguments are named according to RFC 4151.
 	# Although, fragment (what comes after the "#") isn't implemented
 	# → Directly put into specific (eg: specific="myExample#fragment")
 	def __init__(self, date, specific, authority_name=None):
 		self.authority_name = authority_name or Tag.DEFAULT_AUTHORITY_NAME
 		self.date = date
-		self.specific = specific 
-	
+		self.specific = specific
+
 	def __str__(self):
-		
+
 		# TODO: Should we tag object immutable (would be more logical)? [normal]
 		# → Plus, we could raise the ValueError on the creation rather than when displaying (it's hard to debug).
 		# (→ Then, elements should be stored as _private or should we inherit a NamedTuple? (I like the second I think))
-		
+
 		try:
 			assert self.authority_name is not None
 		except AssertionError:
 			raise ValueError("Must set an authority name. Cannot generate tag.")
-		
+
 		return "tag:{authority_name},{date}:{specific}".format(
 			authority_name=self.authority_name,
 			date=self.date,
@@ -211,6 +212,7 @@ class Tag:
 		)
 
 Tag.DEFAULT_AUTHORITY_NAME = 'devutopia.net'
+
 
 class DynamicMapping(dict):
 	"""
@@ -242,7 +244,7 @@ started_on = datetime.datetime.now()
 try:
 	# TODO: Wont this implicitely call ".read()" when we iter over it? ([minor]? or normal)
 	# See tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
-	
+
 	# Then, if so, it shouldn't be let paremeter-less, right?
 	# → Check the opener parameter of http://docs.python.org/3.3/library/functions.html#open
 	# → Also opened an issue on GitHub with more info: https://github.com/JeromeJ/Devutopia/issues/1
@@ -253,7 +255,7 @@ try:
 except OSError:
 	# TODO: Try to create the file? [minor]
 	# Maybe only try to create it when needed?  # On saving?
-	
+
 	hello_world = []  # Default value
 	logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.")  # TODO: Check if "→" displays well in the log (Guessing so) [minor]
 
@@ -307,7 +309,7 @@ template = BetterFormat().format(open('wsgi-scripts/tpl/index.tpl', encoding="ut
 # * …
 # Important notes:
 # → "A feed may have multiple author elements. A feed must contain at least one author element unless all of the entry elements contain at least one author element."
-#	→ I propose to not check that with Python but stick to that note and try to respect it.
+#   → I propose to not check that with Python but stick to that note and try to respect it.
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -379,16 +381,16 @@ HTTPException.error404 = HTTPException('404 Not Found', """
 #~ class NotStrictList(list):
 	#~ """Offer the possibility to normalize data automatically when testing for the presence of some data in that list."""
 	#~ # TODO: Should/could it be about sequences in general? [normal]
-#~ 
+#~
 	#~ default_normalizer = operator.methodcaller('lower')
-#~ 
+#~
 	#~ def __contains__(self, item, strict=False, normalizer=None):
 		#~ if strict:
 			#~ return super().__contains__(item)
-#~ 
+#~
 		#~ if normalizer is None:
 			#~ normalizer = NotStrictList.default_normalizer
-#~ 
+#~
 		#~ return normalizer(item) in map(normalizer, self)
 
 
@@ -398,7 +400,7 @@ HTTPException.error404 = HTTPException('404 Not Found', """
 
 # Not used (Note: Automatically commented using the Ctrl+e command in Geany)
 #~ class Args(dict):
-#~ 
+#~
 	#~ def __init__(self, args):
 		#~ pass
 
@@ -437,86 +439,85 @@ class HTTPManager:
 			self.committed = True
 
 
-
 @app.route("/")
 def index():
 	# # To be able to run in local:
 	# if os.path.isfile(self.environ['PATH_INFO'][1:]):  # Getting rid of the starting "/" to make it relative
-	# 	authorised_ext = {".css": "text/css", ".js": "application/x-javascript"}
-	# 	ext = os.path.splitext(self.environ['PATH_INFO'])[1]
+	#   authorised_ext = {".css": "text/css", ".js": "application/x-javascript"}
+	#   ext = os.path.splitext(self.environ['PATH_INFO'])[1]
 
-	# 	if ext in authorised_ext:
-	# 		# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
-	# 		self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
+	#   if ext in authorised_ext:
+	#       # TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
+	#       self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
 
-	# 		yield open(self.environ['PATH_INFO'][1:], encoding="utf-8").read(1048576) # Funky arbitrary number, right?
-	# 		raise StopIteration
-	# 	else:
-	# 		raise HTTPException.error404
+	#       yield open(self.environ['PATH_INFO'][1:], encoding="utf-8").read(1048576) # Funky arbitrary number, right?
+	#       raise StopIteration
+	#   else:
+	#       raise HTTPException.error404
 	# elif self.environ['PATH_INFO'].rstrip('/') != '':
-	# 	raise HTTPException.error404
+	#   raise HTTPException.error404
 
 	# if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # TODO: Use NotStrictList class [normal]
-	# 	# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
-	# 	self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
+	#   # TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
+	#   self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
 
-	# 	# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping? [normal]
-		
-	# 	# TODO: Errrm, could/should we use two level of "[ normal ]" TODO thing? [important]
-	# 	# (NOTE: Put spaces so that they aren't matched when searching for them with Ctrl+F as actual TODO things)
-	# 	# What we currently have (for [ normal ] and above)
-	# 	# → [ normal ],
-	# 	# → [ important ] (seems already too strong),
-	# 	# → [ critic ] (Erm, if there is something critic, shouldn't it be fixed immediately? ;D and so, this tag shouldn't be used often ^^)
+	#   # TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping? [normal]
 
-	# 	# TODO: Finish to generate RSS automatically [important] (Status: Started)
-	# 	yield BetterFormat().format(
-	# 		rss_template,
-	# 		**{
-	# 			'id': Tag('2013-09-22', 'helloworldfeed'),
-	# 			'name': 'Hello World',
-	# 			'src_html': 'http://devutopia.net/',  # TODO: Make dynamic [normal]
-	# 			'src': 'http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
-	# 			'descript': 'Hello World in several langages',
-	# 			'items': BetterFormat().format(
-	# 				rss_item,
-	# 				**{
-	# 					'descript': '[fr] Bonjour tout le monde',
-	# 					'id': Tag('2013-09-22', 'helloworldentry-in_french-by_devutopia'),
-	# 					'url': 'http://devutopia.net/helloworld.py?itemid=1',
-	# 					# TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
-	# 					'msg': 'French version.<br />\nAdded by devutopia.',
-	# 					'date': '2013-09-22'
-	# 				}
-	# 			)
-	# 		}
-	# 	)
+	#   # TODO: Errrm, could/should we use two level of "[ normal ]" TODO thing? [important]
+	#   # (NOTE: Put spaces so that they aren't matched when searching for them with Ctrl+F as actual TODO things)
+	#   # What we currently have (for [ normal ] and above)
+	#   # → [ normal ],
+	#   # → [ important ] (seems already too strong),
+	#   # → [ critic ] (Erm, if there is something critic, shouldn't it be fixed immediately? ;D and so, this tag shouldn't be used often ^^)
 
-	# 	raise StopIteration
-	
+	#   # TODO: Finish to generate RSS automatically [important] (Status: Started)
+	#   yield BetterFormat().format(
+	#       rss_template,
+	#       **{
+	#           'id': Tag('2013-09-22', 'helloworldfeed'),
+	#           'name': 'Hello World',
+	#           'src_html': 'http://devutopia.net/',  # TODO: Make dynamic [normal]
+	#           'src': 'http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
+	#           'descript': 'Hello World in several langages',
+	#           'items': BetterFormat().format(
+	#               rss_item,
+	#               **{
+	#                   'descript': '[fr] Bonjour tout le monde',
+	#                   'id': Tag('2013-09-22', 'helloworldentry-in_french-by_devutopia'),
+	#                   'url': 'http://devutopia.net/helloworld.py?itemid=1',
+	#                   # TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+	#                   'msg': 'French version.<br />\nAdded by devutopia.',
+	#                   'date': '2013-09-22'
+	#               }
+	#           )
+	#       }
+	#   )
+
+	#   raise StopIteration
+
 	# # TODO: What to do with the junks? ([normal]? or minor)
 	# # → Should get rid of some
 	# # → Could(/should?) keep some but at least tidy up things? group them?
 	# # → idk…
 	# # COMMENT ID: tag:devutopia.net,2013-12-05:junkomania-handling
-	
+
 	# # # Some junk :) ([fr] "syllogomanie"; [en] "compulsive hoarding")
 	# # yield __import__('sys').version+'<br />'
 	# # yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
-	
-	hours = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / (60*60))
-	minutes = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / 60) - hours*60
+
+	hours = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / (60 * 60))
+	minutes = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / 60) - hours * 60
 	# TODO: Could be improved by some kind of "time % 60"? [minor]
-	seconds = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple()))) - hours*60*60 - minutes*60
+	seconds = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple()))) - hours * 60 * 60 - minutes * 60
 
 	yield BetterFormat().format(template,
 		# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
 		# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
 		# test='Nothing to see here 😒', # Don't delete me :p I'm a fancy smiley and I don't want to disappear, let me be!
 		# TODO: Should be put in the test variable? (helloworld.py scope) [minor]
-		
+
 		# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting ) [normal]
-		test='<b>Instance name:</b> {name}<br /><b>Started {hours} hour{s1} {minutes} minute{s2} {seconds} second{s3} ago.</b>'.format(\
+		test='<b>Instance name:</b> {name}<br /><b>Started {hours} hour{s1} {minutes} minute{s2} {seconds} second{s3} ago.</b>'.format(
 			name=cgi.escape(instance_name),
 			hours=hours,
 			s1='s' * (hours > 1),
@@ -528,6 +529,7 @@ def index():
 	)
 	# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
 	# +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
+
 
 class application:
 	"""Main WSGI app."""
@@ -572,7 +574,7 @@ class application:
 
 			# Default commit (if none has been sent yet)
 			self.http.commit()
-			
+
 			# TODO: Make sure the following note is right ([minor]? or normal)
 			# Note: I don't think anything is *sent back* (generator.send and "foo = (yield bar)") to the main app generator (by WSGI itself), so I don't handle that here…
 			# Also see tag:devutopia.net,2013-12-05:dynamic-encoding-type#instead_of_hardcoded
@@ -591,7 +593,7 @@ if __name__ == '__main__':
 	# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
 	# → That is less junk though, important pieces of information here.
 	# TODO: Make a specific comment/TODO-thing for this type o' content or just the comment below? ([minor]? or normal)
-	
+
 	# Then run wsgiref for local testing
 	# → I don't know if wsgiref handles multiple instances (and if so, by its own) (→ I guess/think/hope so)  # TODO: Investiguate/make sure [minor]
 	# → I don't know if I have to handle the request myself if using wsgiref (→ Yep, see answer below)
@@ -603,6 +605,6 @@ if __name__ == '__main__':
 	app.debug = True
 
 	try:
-		app.run('devutopia.net', 80)
+		app.run('127.0.0.1', 8000)
 	except KeyboardInterrupt:
 		print('Shuting down... Good bye!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it? (Or you can "modify" the Windows environnement but it's not a good idea and not perfect)
