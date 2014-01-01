@@ -18,19 +18,21 @@ to bring a decentralized-like plateform for everybody and every type of content.
 import cgi
 import collections
 import datetime
-# import functools  # Not used
 import logging  # TODO: Change the format of logging so that it includes the date [minor]
 import operator
 import os
 import re
 # import sqlite3  # Not used
 import string
-import sys
+# import sys  # Notu used
 import time
+import types
 import urllib.parse
 import uuid
 
-from flask import Flask  # TODO: Upgrade to Flask [important] (Status: Started)
+from functools import wraps
+
+from flask import Flask, Response, stream_with_context  # TODO: Upgrade to Flask [important] (Status: Started)
 
 # TODO: Make an offical address (*@devutopia.net) [normal]
 # COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
@@ -56,6 +58,38 @@ __licence__ = "Copy left: Share-alike"
 # It is due to the upgrade from mod_wsgi to Flask.
 
 app = Flask(__name__)
+
+# Decorator to make Flask accept generators
+
+@wraps(app.route)
+def route_accept_generators(*args, **kwargs):
+	route = route_accept_generators.app_route(*args, **kwargs)  # Getting our route decorator.
+
+	# Decorating it.
+	@wraps(route)
+	def decorated(f):
+
+		# Make so that the function that will be called return a valid Flask answer in case of returning a generator.
+		@wraps(f)
+		def function_accept_generators(*args, **kwargs):
+			r = f(*args, **kwargs)
+
+			if isinstance(r, types.GeneratorType):
+				# return Response(r, direct_passthrough=True)  # Solution proposed here: http://flask.pocoo.org/mailinglist/archive/2010/11/3/using-yield/#478b0c1829b5263700da1db7d2d22c79
+				return Response(stream_with_context(r))  # Solution found here: http://stackoverflow.com/q/13386681/1524913
+
+			return r
+
+		return route(function_accept_generators)
+
+	return decorated
+
+# Store the function so that it doesn't make an infinite recursion call
+# Because accessing from app.route rather than directly)
+# And storing it in itself instead of creating another standalone variable
+route_accept_generators.app_route = app.route
+
+app.route = route_accept_generators
 
 try:
 	# Uniformisation
@@ -476,7 +510,7 @@ def index():
 	# TODO: Could be improved by some kind of "time % 60"? [minor]
 	seconds = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple()))) - hours*60*60 - minutes*60
 
-	return BetterFormat().format(template,
+	yield BetterFormat().format(template,
 		# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
 		# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
 		# test='Nothing to see here 😒', # Don't delete me :p I'm a fancy smiley and I don't want to disappear, let me be!
@@ -565,6 +599,8 @@ if __name__ == '__main__':
 
 	# Answer: "If you want to serve multiple applications on a single host and port, you should create a WSGI application that parses PATH_INFO to select which application to invoke for each request. (E.g., using the shift_path_info() function from wsgiref.util.)"
 
+	# TODO: Improve the logging of errors and all with Flask [important]
+	# Currently showing everything with debug on or not showing anything at all -.-'
 	app.debug = True
 
 	try:
