@@ -24,7 +24,7 @@ import os
 import re
 # import sqlite3  # Not used
 import string
-# import sys  # Notu used
+# import sys  # Not used
 import time
 import types
 import urllib.parse
@@ -504,7 +504,6 @@ def index():
 	# # yield __import__('sys').version+'<br />'
 	# # yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
 	
-	# Timestamp in minutes of now minus timestamp of minutes since when that instance started
 	hours = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / (60*60))
 	minutes = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / 60) - hours*60
 	# TODO: Could be improved by some kind of "time % 60"? [minor]
