@@ -30,13 +30,7 @@ import time
 import urllib.parse
 import uuid
 
-sys.path.append('/usr/local/lib/python3.3/dist-packages/')
-from flask import Flask
-
-app = Flask(__name__)
-
-# TODO: I should write a reminder on how I, finally, managed to install that 'stupid' Flask for Python 3 (sorry but it was a pain in the ass for unlucky me…) [important]
-# TODO: Fix the architecture so I don't need to write wsgi-scripts in front of paths anymore (it was just a lazy hack anyway) [normal]
+from flask import Flask  # TODO: Upgrade to Flask [important] (Status: Started)
 
 # TODO: Make an offical address (*@devutopia.net) [normal]
 # COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
@@ -48,6 +42,20 @@ __contact__ = "devutopia.devs [this would be an amphora symbol but we don't like
 __website__ = "http://devutopia.net/"
 __licence__ = "Copy left: Share-alike"
 
+
+# ## Reminder / Helper: Way I did setup Flask for Python 3 ##
+# (Note: You 'may' not have those packages available to you by default)
+# (… Personnally I had to temporarly add the saucy packages for the newer version of Ubuntu)
+#
+# aptitude install python3-pip
+# pip3 install flask
+# echo "export PYTHONPATH=/usr/local/lib/python3.3/dist-packages/" >> .bashrc # May differ on your system! (May be improved too)
+# # Alternative: sys.path.append('/usr/local/lib/python3.3/dist-packages/')
+
+# TODO: Fix the architecture so I don't need to write wsgi-scripts in front of paths anymore (it was just a lazy hack anyway) [normal]
+# It is due to the upgrade from mod_wsgi to Flask.
+
+app = Flask(__name__)
 
 try:
 	# Uniformisation
@@ -394,7 +402,100 @@ class HTTPManager:
 
 			self.committed = True
 
+
+
 @app.route("/")
+def index():
+	# # To be able to run in local:
+	# if os.path.isfile(self.environ['PATH_INFO'][1:]):  # Getting rid of the starting "/" to make it relative
+	# 	authorised_ext = {".css": "text/css", ".js": "application/x-javascript"}
+	# 	ext = os.path.splitext(self.environ['PATH_INFO'])[1]
+
+	# 	if ext in authorised_ext:
+	# 		# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
+	# 		self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
+
+	# 		yield open(self.environ['PATH_INFO'][1:], encoding="utf-8").read(1048576) # Funky arbitrary number, right?
+	# 		raise StopIteration
+	# 	else:
+	# 		raise HTTPException.error404
+	# elif self.environ['PATH_INFO'].rstrip('/') != '':
+	# 	raise HTTPException.error404
+
+	# if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # TODO: Use NotStrictList class [normal]
+	# 	# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
+	# 	self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
+
+	# 	# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping? [normal]
+		
+	# 	# TODO: Errrm, could/should we use two level of "[ normal ]" TODO thing? [important]
+	# 	# (NOTE: Put spaces so that they aren't matched when searching for them with Ctrl+F as actual TODO things)
+	# 	# What we currently have (for [ normal ] and above)
+	# 	# → [ normal ],
+	# 	# → [ important ] (seems already too strong),
+	# 	# → [ critic ] (Erm, if there is something critic, shouldn't it be fixed immediately? ;D and so, this tag shouldn't be used often ^^)
+
+	# 	# TODO: Finish to generate RSS automatically [important] (Status: Started)
+	# 	yield BetterFormat().format(
+	# 		rss_template,
+	# 		**{
+	# 			'id': Tag('2013-09-22', 'helloworldfeed'),
+	# 			'name': 'Hello World',
+	# 			'src_html': 'http://devutopia.net/',  # TODO: Make dynamic [normal]
+	# 			'src': 'http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
+	# 			'descript': 'Hello World in several langages',
+	# 			'items': BetterFormat().format(
+	# 				rss_item,
+	# 				**{
+	# 					'descript': '[fr] Bonjour tout le monde',
+	# 					'id': Tag('2013-09-22', 'helloworldentry-in_french-by_devutopia'),
+	# 					'url': 'http://devutopia.net/helloworld.py?itemid=1',
+	# 					# TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+	# 					'msg': 'French version.<br />\nAdded by devutopia.',
+	# 					'date': '2013-09-22'
+	# 				}
+	# 			)
+	# 		}
+	# 	)
+
+	# 	raise StopIteration
+	
+	# # TODO: What to do with the junks? ([normal]? or minor)
+	# # → Should get rid of some
+	# # → Could(/should?) keep some but at least tidy up things? group them?
+	# # → idk…
+	# # COMMENT ID: tag:devutopia.net,2013-12-05:junkomania-handling
+	
+	# # # Some junk :) ([fr] "syllogomanie"; [en] "compulsive hoarding")
+	# # yield __import__('sys').version+'<br />'
+	# # yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
+	
+	# Timestamp in minutes of now minus timestamp of minutes since when that instance started
+	hours = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / (60*60))
+	minutes = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / 60) - hours*60
+	# TODO: Could be improved by some kind of "time % 60"? [minor]
+	seconds = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple()))) - hours*60*60 - minutes*60
+
+	return BetterFormat().format(template,
+		# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
+		# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
+		# test='Nothing to see here 😒', # Don't delete me :p I'm a fancy smiley and I don't want to disappear, let me be!
+		# TODO: Should be put in the test variable? (helloworld.py scope) [minor]
+		
+		# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting ) [normal]
+		test='<b>Instance name:</b> {name}<br /><b>Started {hours} hour{s1} {minutes} minute{s2} {seconds} second{s3} ago.</b>'.format(\
+			name=cgi.escape(instance_name),
+			hours=hours,
+			s1='s' * (hours > 1),
+			minutes=minutes,
+			s2='s' * (minutes > 1),
+			seconds=seconds,
+			s3='s' * (seconds > 1)
+		)
+	)
+	# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
+	# +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
+
 class application:
 	"""Main WSGI app."""
 
@@ -453,91 +554,6 @@ class application:
 			# TODO: See tag:devutopia.net,2013-12-05:dynamic-encoding-type#instead_of_hardcoded [normal]
 			yield HTTP_exception(self.environ).msg.encode('utf-8')
 
-	def main(self):
-		
-		# To be able to run in local:
-		if os.path.isfile(self.environ['PATH_INFO'][1:]):  # Getting rid of the starting "/" to make it relative
-			authorised_ext = {".css": "text/css", ".js": "application/x-javascript"}
-			ext = os.path.splitext(self.environ['PATH_INFO'])[1]
-
-			if ext in authorised_ext:
-				# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
-				self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
-
-				yield open(self.environ['PATH_INFO'][1:], encoding="utf-8").read(1048576) # Funky arbitrary number, right?
-				raise StopIteration
-			else:
-				raise HTTPException.error404
-		elif self.environ['PATH_INFO'].rstrip('/') != '':
-			raise HTTPException.error404
-
-		if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # TODO: Use NotStrictList class [normal]
-			# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
-			self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
-
-			# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping? [normal]
-			
-			# TODO: Errrm, could/should we use two level of "[ normal ]" TODO thing? [important]
-			# (NOTE: Put spaces so that they aren't matched when searching for them with Ctrl+F as actual TODO things)
-			# What we currently have (for [ normal ] and above)
-			# → [ normal ],
-			# → [ important ] (seems already too strong),
-			# → [ critic ] (Erm, if there is something critic, shouldn't it be fixed immediately? ;D and so, this tag shouldn't be used often ^^)
-
-			# TODO: Finish to generate RSS automatically [important] (Status: Started)
-			yield BetterFormat().format(
-				rss_template,
-				**{
-					'id': Tag('2013-09-22', 'helloworldfeed'),
-					'name': 'Hello World',
-					'src_html': 'http://devutopia.net/',  # TODO: Make dynamic [normal]
-					'src': 'http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
-					'descript': 'Hello World in several langages',
-					'items': BetterFormat().format(
-						rss_item,
-						**{
-							'descript': '[fr] Bonjour tout le monde',
-							'id': Tag('2013-09-22', 'helloworldentry-in_french-by_devutopia'),
-							'url': 'http://devutopia.net/helloworld.py?itemid=1',
-							# TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
-							'msg': 'French version.<br />\nAdded by devutopia.',
-							'date': '2013-09-22'
-						}
-					)
-				}
-			)
-
-			raise StopIteration
-		
-		# TODO: What to do with the junks? ([normal]? or minor)
-		# → Should get rid of some
-		# → Could(/should?) keep some but at least tidy up things? group them?
-		# → idk…
-		# COMMENT ID: tag:devutopia.net,2013-12-05:junkomania-handling
-		
-		# # Some junk :) ([fr] "syllogomanie"; [en] "compulsive hoarding")
-		# yield __import__('sys').version+'<br />'
-		# yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
-		
-		# Timestamp in minutes of now minus timestamp of minutes since when that instance started
-		minutes = int(time.mktime(datetime.datetime.now().timetuple()) / 60 - time.mktime(started_on.timetuple()) / 60)
-
-		yield BetterFormat().format(template,
-			# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
-			# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
-			# test='Nothing to see here 😒', # Don't delete me :p I'm a fancy smiley and I don't want to disappear, let me be!
-			# TODO: Should be put in the test variable? (helloworld.py scope) [minor]
-			
-			# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting ) [normal]
-			test='<b>Instance name:</b> {name}<br /><b>Started {minutes} minute{s} ago.</b>'.format(\
-				name=cgi.escape(instance_name),
-				minutes=minutes,
-				s='s' * (minutes > 1)
-			)
-		)
-		# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
-		# +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
-
 if __name__ == '__main__':
 	# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
 	# → That is less junk though, important pieces of information here.
@@ -548,6 +564,8 @@ if __name__ == '__main__':
 	# → I don't know if I have to handle the request myself if using wsgiref (→ Yep, see answer below)
 
 	# Answer: "If you want to serve multiple applications on a single host and port, you should create a WSGI application that parses PATH_INFO to select which application to invoke for each request. (E.g., using the shift_path_info() function from wsgiref.util.)"
+
+	app.debug = True
 
 	try:
 		app.run('devutopia.net', 80)
