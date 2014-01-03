@@ -54,9 +54,6 @@ __licence__ = "Copy left: Share-alike"
 # echo "export PYTHONPATH=/usr/local/lib/python3.3/dist-packages/" >> .bashrc # May differ on your system! (May be improved too)
 # # Alternative: sys.path.append('/usr/local/lib/python3.3/dist-packages/')
 
-# TODO: Fix the architecture so I don't need to write wsgi-scripts in front of paths anymore (it was just a lazy hack anyway) [normal]
-# It is due to the upgrade from mod_wsgi to Flask.
-
 app = Flask(__name__)
 
 # Decorator to make Flask accept generators
@@ -251,7 +248,7 @@ try:
 
 	# TODO: Also find a way to embed that into a "with" block as it should? [normal]
 
-	hello_world = open('wsgi-scripts/data/helloworld.txt', encoding="utf-8")
+	hello_world = open('data/helloworld.txt', encoding="utf-8")
 except OSError:
 	# TODO: Try to create the file? [minor]
 	# Maybe only try to create it when needed?  # On saving?
@@ -281,7 +278,7 @@ moto = [
 
 # TODO: Hey, should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
 # TODO: Why 4096 if not "why not?"? [minor]
-template = BetterFormat().format(open('wsgi-scripts/tpl/index.tpl', encoding="utf-8").read(4096),
+template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
 	# Cannot use 'expr if hello_world else "No lang registered yet"' because hello_world returns True (as it is a generator)
 	# Even if it will not yield anything (which was confusing at first but totaly normal).
 	# → Using the "or" trick instead.
@@ -289,7 +286,7 @@ template = BetterFormat().format(open('wsgi-scripts/tpl/index.tpl', encoding="ut
 		'<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(
 			*cgi.escape(line[:-1]).split(None, 1))
 		for line in hello_world)  # CODE ID: tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
-	or "<em>No lang registered yet!</em>",
+	or "<em>No lang registered yet!</em><br />",
 
 	moto='<li>' + '</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto) + '</li>')
 

@@ -3,7 +3,7 @@
 	<head>
 		<title>Hello world ☺ - Olissea DEV</title>
 		<meta charset="UTF-8" />
-		<link rel="stylesheet" media="screen" type="text/css" title="Main style" href="css/main.css" />
+		<link rel="stylesheet" media="screen" type="text/css" title="Main style" href="static/css/main.css" />
 	</head>
 	<body>
 		<header id="header">
