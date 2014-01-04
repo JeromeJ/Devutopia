@@ -339,39 +339,6 @@ rss_item = """\
 # TODO: Isn't 'rel="alternate"' by default in that case? (Couldn't specify a link to a RSS entry, right?) [minor]
 # → I think so but I also think it should be indicated anyway
 
-
-class HTTPException(Exception):
-
-	def __init__(self, code, msg):
-		self.code = code
-		self.msg = msg
-		super().__init__(code)
-
-	def __call__(self, environ):
-		self.msg = self.msg.format_map(
-			DynamicMapping(environ, strict=False, safe=True))
-
-		return self
-
-
-# TODO: Improve by making more dynamic? (like the charset? etc) [normal]
-# TODO: Using a template (right?) [normal]
-# TODO: Also implement other errors… [normal]
-# …Ideally all based on the same base template: Shouldn't it be handled by the HTTPException class then?)
-HTTPException.error404 = HTTPException('404 Not Found', """
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>404 Not Found</title>
-		<meta charset="UTF-8" />
-	</head>
-	<body>
-		<h1>Not Found</h1>
-		<p>The requested URL {SCRIPT_NAME} was not found on this server.</p>
-	</body>
-</html>\
-""")
-
 # TODO: Use it. Maybe improving it first (+ see Args class) [normal]
 
 # Not used (Note: Automatically commented using the Ctrl+e command in Geany)
