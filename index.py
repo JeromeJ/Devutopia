@@ -370,22 +370,6 @@ rss_item = """\
 
 @app.route("/")
 def index():
-	# # To be able to run in local:
-	# if os.path.isfile(self.environ['PATH_INFO'][1:]):  # Getting rid of the starting "/" to make it relative
-	#   authorised_ext = {".css": "text/css", ".js": "application/x-javascript"}
-	#   ext = os.path.splitext(self.environ['PATH_INFO'])[1]
-
-	#   if ext in authorised_ext:
-	#       # TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
-	#       self.http.headers['Content-Type'] = authorised_ext[ext] + "; charset=utf-8"
-
-	#       yield open(self.environ['PATH_INFO'][1:], encoding="utf-8").read(1048576) # Funky arbitrary number, right?
-	#       raise StopIteration
-	#   else:
-	#       raise HTTPException.error404
-	# elif self.environ['PATH_INFO'].rstrip('/') != '':
-	#   raise HTTPException.error404
-
 	# if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # TODO: Use NotStrictList class [normal]
 	#   # TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
 	#   self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
