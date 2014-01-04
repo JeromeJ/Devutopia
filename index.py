@@ -368,41 +368,6 @@ rss_item = """\
 	#~ def __init__(self, args):
 		#~ pass
 
-
-class HTTPManager:
-	"""WSGI HTTP Managing Utility tool."""
-
-	status = '200 OK'
-
-	headers = {
-		'Content-Type': 'text/html; charset=utf-8',
-
-		# TODO: Idea: Make so that when editting Content-Type… [normal]
-		# …it automatically becomes '{content-type}; charset={charset}' (or something like that ;) )
-		# COMMENT ID: tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset
-		# → Handle them automatically
-	}
-
-	committed = False
-
-	def __init__(self, start_response):
-		self.start_response = start_response
-		self.headers = HTTPManager.headers.copy()
-
-	def exception(self, err):
-		self.status = err.code
-		self.commit()
-
-	def commit(self):
-		if not self.committed:
-			self.start_response(
-				self.status,
-				list(self.headers.items())
-			)
-
-			self.committed = True
-
-
 @app.route("/")
 def index():
 	# # To be able to run in local:
