@@ -533,7 +533,11 @@ if __name__ == '__main__':
 	# Currently showing everything with debug on or not showing anything at all -.-'
 	app.debug = True
 
+	# TODO: Apparently, when debug is enabled, the server asks for those info twice. Why? Does it create two instances because of input? [normal]
+	addr = input('Addr? [devutopia.net] ')
+	port = input('Port? [80] ')
+
 	try:
-		app.run('devutopia.net', 80)
+		app.run(addr or 'devutopia.net', int(port or 80))
 	except KeyboardInterrupt:
 		print('Shuting down... Good bye!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it? (Or you can "modify" the Windows environnement but it's not a good idea and not perfect)
