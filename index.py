@@ -32,7 +32,9 @@ import uuid
 
 from functools import wraps
 
-from flask import Flask, Response, stream_with_context  # TODO: Upgrade to Flask [important] (Status: Started)
+from flask import Flask, request, Response, stream_with_context  # TODO: Upgrade to Flask [important] (Status: Started)
+from urllib.parse import urljoin
+from werkzeug.contrib.atom import AtomFeed
 
 # TODO: Make an offical address (*@devutopia.net) [normal]
 # COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
@@ -298,7 +300,35 @@ template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(40
 # <strong>Method:</strong> {method}\
 # """
 
-# TODO: Continuing studying ATOM feeds. [important] (Status: Started)
+# TODO: Use it. Maybe improving it first (+ see Args class) [normal]
+
+# # Not used
+# class NotStrictList(list):
+# 	"""Offer the possibility to normalize data automatically when testing for the presence of some data in that list."""
+# 	# TODO: Should/could it be about sequences in general? [normal]
+#	
+# 	default_normalizer = operator.methodcaller('lower')
+#
+# 	def __contains__(self, item, strict=False, normalizer=None):
+# 		if strict:
+# 			return super().__contains__(item)
+#
+# 		if normalizer is None:
+# 			normalizer = NotStrictList.default_normalizer
+#
+# 		return normalizer(item) in map(normalizer, self)
+
+
+# TODO: To be finished too! [normal]
+# Will probably be used to automatically do what is needed for args and post? (for instance changing them into a dict of NonStrictList?)
+# Instead to be directly handled in the main class
+
+# # Not used
+# class Args(dict):
+# 	def __init__(self, args):
+# 		pass
+
+# TODO: Continuing studying ATOM feeds and finish to generate ATOM automatically [important] (Status: Started)
 # Ressources:  # TODO: Open a GitHub's issue instead? ([important]: Talking about the question) (→ Thinking so, but idk)
 # * http://www.diveinto.org/python3/xml.html
 # * http://www.tutorialspoint.com/rss/what-is-atom.htm
@@ -306,7 +336,11 @@ template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(40
 # * …
 # Important notes:
 # → "A feed may have multiple author elements. A feed must contain at least one author element unless all of the entry elements contain at least one author element."
-#   → I propose to not check that with Python but stick to that note and try to respect it.
+#	→ I propose to not check that with Python but stick to that note and try to respect it.
+
+def make_external(url):
+	return urljoin(request.url_root, url)
+
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -339,84 +373,81 @@ rss_item = """\
 # TODO: Isn't 'rel="alternate"' by default in that case? (Couldn't specify a link to a RSS entry, right?) [minor]
 # → I think so but I also think it should be indicated anyway
 
-# TODO: Use it. Maybe improving it first (+ see Args class) [normal]
+# RSS
+@app.route('/helloworld.atom')
+def helloworld_atom():
+	feed = AtomFeed('Hello World', feed_url=request.url, url=request.url_root, id=Tag('2013-09-22', 'helloworldfeed'))
 
-# Not used (Note: Automatically commented using the Ctrl+e command in Geany)
-#~ class NotStrictList(list):
-	#~ """Offer the possibility to normalize data automatically when testing for the presence of some data in that list."""
-	#~ # TODO: Should/could it be about sequences in general? [normal]
-#~
-	#~ default_normalizer = operator.methodcaller('lower')
-#~
-	#~ def __contains__(self, item, strict=False, normalizer=None):
-		#~ if strict:
-			#~ return super().__contains__(item)
-#~
-		#~ if normalizer is None:
-			#~ normalizer = NotStrictList.default_normalizer
-#~
-		#~ return normalizer(item) in map(normalizer, self)
+	hello_world = open('data/helloworld.txt', encoding="utf-8")  # TODO: Couldn't use helloworld because it was exhausted. Build it once instead. [normal]
 
+	for i, line in enumerate(hello_world):
+		lang_code, helloworld_translated = line[:-1].split(None, 1)
+		feed.add('Hello World in {}'.format(cgi.escape(lang_code)),
+			helloworld_translated,
+			content_type='html',
+			author='Devutopia',
+			url=make_external('helloworld/entry.id.{}'.format(i)),
+			updated=datetime.datetime(2014, 1, 5, 20, 12),
+			published=datetime.datetime(2014, 1, 5, 20, 12),
+		)
+	return feed.get_response()
 
-# TODO: To be finished too! [normal]
-# Will probably be used to automatically do what is needed for args and post? (for instance changing them into a dict of NonStrictList?)
-# Instead to be directly handled in the main class
-
-# Not used (Note: Automatically commented using the Ctrl+e command in Geany)
-#~ class Args(dict):
-#~
-	#~ def __init__(self, args):
-		#~ pass
-
-@app.route("/")
+@app.route('/')
 def index():
-	# if 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # TODO: Use NotStrictList class [normal]
-	#   # TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
-	#   self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
+	""" Main WSGI app (Flask). """
 
-	#   # TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping? [normal]
+	# TODO: Change the docstring? ([normal]? or minor)
+	# Calling it "presentation" or "homepage"?
+	# Or let it be the "Helloworld app" even though it will probably eventually not be the "homepage app" anymore?
+	# Maybe create the "homepage app" and set it so "homepage_app = hello_world_app"?
 
-	#   # TODO: Errrm, could/should we use two level of "[ normal ]" TODO thing? [important]
-	#   # (NOTE: Put spaces so that they aren't matched when searching for them with Ctrl+F as actual TODO things)
-	#   # What we currently have (for [ normal ] and above)
-	#   # → [ normal ],
-	#   # → [ important ] (seems already too strong),
-	#   # → [ critic ] (Erm, if there is something critic, shouldn't it be fixed immediately? ;D and so, this tag shouldn't be used often ^^)
+	# TODO: Implement str.format_map for BetterFormat so that one can use DynamicMapping? [normal]
 
-	#   # TODO: Finish to generate RSS automatically [important] (Status: Started)
-	#   yield BetterFormat().format(
-	#       rss_template,
-	#       **{
-	#           'id': Tag('2013-09-22', 'helloworldfeed'),
-	#           'name': 'Hello World',
-	#           'src_html': 'http://devutopia.net/',  # TODO: Make dynamic [normal]
-	#           'src': 'http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
-	#           'descript': 'Hello World in several langages',
-	#           'items': BetterFormat().format(
-	#               rss_item,
-	#               **{
-	#                   'descript': '[fr] Bonjour tout le monde',
-	#                   'id': Tag('2013-09-22', 'helloworldentry-in_french-by_devutopia'),
-	#                   'url': 'http://devutopia.net/helloworld.py?itemid=1',
-	#                   # TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
-	#                   'msg': 'French version.<br />\nAdded by devutopia.',
-	#                   'date': '2013-09-22'
-	#               }
-	#           )
-	#       }
-	#   )
+	# TODO: Errrm, could/should we use two level of "[ normal ]" TODO thing? [important]
+	# (NOTE: Put spaces so that they aren't matched when searching for them with Ctrl+F as actual TODO things)
+	# What we currently have (for [ normal ] and above)
+	# → [ normal ],
+	# → [ important ] (seems already too strong),
+	# → [ critic ] (Erm, if there is something critic, shouldn't it be fixed immediately? ;D and so, this tag shouldn't be used often ^^)
 
-	#   raise StopIteration
+	# Not used
+	if False and 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # TODO: Use NotStrictList class [normal]
+		# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
+		self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
 
-	# # TODO: What to do with the junks? ([normal]? or minor)
-	# # → Should get rid of some
-	# # → Could(/should?) keep some but at least tidy up things? group them?
-	# # → idk…
-	# # COMMENT ID: tag:devutopia.net,2013-12-05:junkomania-handling
+		yield BetterFormat().format(
+			 rss_template,
+			 **{
+				  'id': Tag('2013-09-22', 'helloworldfeed'),
+				  'name': 'Hello World',
+				  'src_html': 'http://devutopia.net/',  # TODO: Make dynamic [normal]
+				  'src': 'http://devutopia.net/?do=RSS',  # TODO: Make dynamic [normal]
+				  'descript': 'Hello World in several langages',
+				  'items': BetterFormat().format(
+						rss_item,
+						**{
+							 'descript': '[fr] Bonjour tout le monde',
+							 'id': Tag('2013-09-22', 'helloworldentry-in_french-by_devutopia'),
+							 'url': 'http://devutopia.net/helloworld.py?itemid=1',
+							 # TODO: Should automatically aligns on two lines (see tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting)
+							 'msg': 'French version.<br />\nAdded by devutopia.',
+							 'date': '2013-09-22'
+						}
+				  )
+			 }
+		)
 
-	# # # Some junk :) ([fr] "syllogomanie"; [en] "compulsive hoarding")
-	# # yield __import__('sys').version+'<br />'
-	# # yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
+		raise StopIteration
+
+	# TODO: What to do with the junks? ([normal]? or minor)
+	# → Should get rid of some
+	# → Could(/should?) keep some but at least tidy up things? group them?
+	# → idk…
+	# COMMENT ID: tag:devutopia.net,2013-12-05:junkomania-handling
+
+	# # Some junk :) ([fr] "syllogomanie"; [en] "compulsive hoarding")
+	# yield __import__('sys').version+'<br />'
+	# yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
 
 	hours = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / (60 * 60))
 	minutes = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / 60) - hours * 60
@@ -445,12 +476,7 @@ def index():
 
 
 class application:
-	"""Main WSGI app."""
-
-	# TODO: Change the docstring? ([normal]? or minor)
-	# Calling it "presentation" or "homepage"?
-	# Or let it be the "Helloworld app" even though it will probably eventually not be the "homepage app" anymore?
-	# Maybe create the "homepage app" and set it so "homepage_app = hello_world_app"?
+	"""Alternative WSGI app (uses pure WSGI) (Not used but kept for the transition to Flask)."""
 
 	def __init__(self, environ, start_response):
 		self.environ = environ
@@ -515,7 +541,7 @@ if __name__ == '__main__':
 
 	# TODO: Improve the logging of errors and all with Flask [important]
 	# Currently showing everything with debug on or not showing anything at all -.-'
-	app.debug = True
+	app.debug = False
 
 	# TODO: Apparently, when debug is enabled, the server asks for those info twice. Why? Does it create two instances because of input? [normal]
 	addr = input('Addr? [devutopia.net] ')
