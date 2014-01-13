@@ -392,6 +392,11 @@ def helloworld_atom():
 		)
 	return feed.get_response()
 
+@app.after_request
+def after_request(response):
+	response.headers.add('Server', 'Werkzeug Python 3')
+	return response
+
 @app.route('/')
 def index():
 	""" Main WSGI app (Flask). """
