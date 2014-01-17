@@ -24,13 +24,15 @@ import os
 import re
 # import sqlite3  # Not used
 import string
-# import sys  # Not used
+import sys
 import time
 import types
 import urllib.parse
 import uuid
 
 from functools import wraps
+
+sys.path.append('/usr/local/lib/python3.3/dist-packages/')
 
 from flask import Flask, request, Response, stream_with_context  # TODO: Upgrade to Flask [important] (Status: Started)
 from urllib.parse import urljoin
@@ -394,7 +396,8 @@ def helloworld_atom():
 
 @app.after_request
 def after_request(response):
-	response.headers.add('Server', 'Werkzeug Python 3')
+	# Remove the display of the full version of Werkzeug and Python.
+	response.headers.add('Server', 'Werkzeug Python 3')  # TODO: Should we consider removing it completly or is it good enough? [minor]
 	return response
 
 @app.route('/')
