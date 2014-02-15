@@ -59,6 +59,7 @@ __licence__ = "Copy left: Share-alike"
 # # Alternative: sys.path.append('/usr/local/lib/python3.3/dist-packages/')
 
 app = Flask(__name__)
+application = app
 
 # Decorator to make Flask accept generators
 
@@ -222,7 +223,7 @@ class DynamicMapping(dict):
 	Options to allow to automatically escape data and/or to allow missing keys.
 	"""
 
-	def __init__(self, *args, strict=True, safe=True, **kwargs):
+	def __init__(self, strict=True, safe=True, *args, **kwargs):
 		self.strict = strict
 		self.safe = safe
 		super().__init__(*args, **kwargs)
@@ -483,7 +484,7 @@ def index():
 	# +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
 
 
-class application:
+class OLDWSGI:
 	"""Alternative WSGI app (uses pure WSGI) (Not used but kept for the transition to Flask)."""
 
 	def __init__(self, environ, start_response):
