@@ -470,14 +470,11 @@ def index():
 		# TODO: Should be put in the test variable? (helloworld.py scope) [minor]
 
 		# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting ) [normal]
-		test='<b>Instance name:</b> {name}<br /><b>Started {hours} hour{s1} {minutes} minute{s2} {seconds} second{s3} ago.</b>'.format(
+		test='<b>Instance name:</b> {name}<br /><b>Started {hours}{minutes}{seconds} ago.</b>'.format(
 			name=cgi.escape(instance_name),
-			hours=hours,
-			s1='s' * (hours > 1),
-			minutes=minutes,
-			s2='s' * (minutes > 1),
-			seconds=seconds,
-			s3='s' * (seconds > 1)
+			hours='{} hour{} '.format(hours, 's' * (hours >1)) if hours else '',
+			minutes='{} minute{} '.format(minutes, 's' * (minutes > 1)) if minutes or hours else '',
+			seconds='{} second{}'.format(seconds, 's' * (seconds > 1)),
 		)
 	)
 	# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
