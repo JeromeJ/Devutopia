@@ -7,8 +7,8 @@
 	</head>
 	<body>
 		<header id="header">
-			<div id="status"><strong><span class="WIP">WIP</span> Work In Progress</strong>, <em>come back later!</em></div><!-- # TODO: Remove that? When? -->
-			<div id="extra"><em>Contact us if interested!</em><br /><strong>Contact:</strong> devutopia.devs [at symbol] olissea.net</div><!-- # TODO: See tag:devutopia.net,2013-11-03:Topic-changing-contact-info (in helloworld.py) -->
+			<div id="status"><strong><span class="WIP">WIP</span> Work In Progress</strong>, <em>come back later!</em></div><!-- # TODO: Remove that? When? [minor] -->
+			<div id="extra"><em>Contact us if interested!</em><br /><strong>Contact:</strong> devutopia.devs [at symbol] olissea.net</div><!-- # TODO: See tag:devutopia.net,2013-11-03:Topic-changing-contact-info (in helloworld.py) [minor] -->
 			<div id="title"><strong><span class="dev">Dev</span><span class="utopia">utopia</span></strong></div>
 		</header>
 
@@ -43,8 +43,8 @@
 		</div>
 
 		<footer id="foot">
-			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span class="hearts">❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- # TODO: Ne s'affiche que sous win… Une piste: U+1F495, U+1F496, U+1F497, U+1F499, U+1F49A, U+1F49B, U+1F49C, U+1F49D, U+1F49E, U+1F49F, U+1F496, U+1F497, U+1F498, U+1F49B, U+1F49D, U+1F49E, U+1F49F la séquence complète. C’est valide, et il existe sûrement une fonte qui les a --><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! --></span>
-			<span id="source"><strong>Source:</strong> ftp://anonymous@devutopia.net/ </span>
+			<span id="privacyPolicy"> We don't collect data about you ☺<span class="heart">♥</span> → We <strong class="love">love</strong> you! <span class="hearts">❤💓💕💖💘💗💙💚💛💜💝💞💟💖💙💜💚💗💘💛💝💞💟</span><!-- # TODO: Ne s'affiche que sous win… Une piste: U+1F495, U+1F496, U+1F497, U+1F499, U+1F49A, U+1F49B, U+1F49C, U+1F49D, U+1F49E, U+1F49F, U+1F496, U+1F497, U+1F498, U+1F49B, U+1F49D, U+1F49E, U+1F49F la séquence complète. C’est valide, et il existe sûrement une fonte qui les a --><!-- Note for myself: If you edit that under windows, it will look glitched, don't edit that part!! [minor] --></span>
+			<span id="source"><strong>Source:</strong> <a href="https://github.com/JeromeJ/Devutopia">Devutopia sur Github</a> </span>
 		</footer>
 	</body>
 </html>

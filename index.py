@@ -22,7 +22,7 @@ import logging  # TODO: Change the format of logging so that it includes the dat
 # import operator  # Not used
 import os
 import re
-# import sqlite3  # Not used
+import sqlite3  # Not used
 import string
 import sys
 import time
@@ -243,29 +243,53 @@ class DynamicMapping(dict):
 
 started_on = datetime.datetime.now()
 
-try:
-	# TODO: Wont this implicitely call ".read()" when we iter over it? ([minor]? or normal)
-	# See tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
-
-	# Then, if so, it shouldn't be let paremeter-less, right?
-	# → Check the opener parameter of http://docs.python.org/3.3/library/functions.html#open
-	# → Also opened an issue on GitHub with more info: https://github.com/JeromeJ/Devutopia/issues/1
-
-	# TODO: Also find a way to embed that into a "with" block as it should? [normal]
-
-	hello_world = open('data/helloworld.txt', encoding="utf-8")
-except OSError:
-	# TODO: Try to create the file? [minor]
-	# Maybe only try to create it when needed?  # On saving?
-
-	hello_world = []  # Default value
-	logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.")  # TODO: Check if "→" displays well in the log (Guessing so) [minor]
-
 # TODO: Finish to setup the SQLite db alternative ([important] ?) (Status: started)
 
-# HW_conn = sqlite3.connect('data/helloworld.db')
-# c = HW_conn.cursor()
-# c.execute('CREATE TABLE IF NOT EXISTS langs (id INTEGER PRIMARY KEY, author INTEGER, lang_name VARCHAR, translation VARCHAR, added DATE)')
+try:
+	hw_conn = sqlite3.connect('data/helloworld.db')
+
+	# # If you want being able to access by columns name too
+	# hw_conn.row_factory = sqlite3.Row
+	with hw_conn:
+		hw_conn.execute(
+		"""CREATE TABLE
+			IF NOT EXISTS
+			langs (
+				id INTEGER PRIMARY KEY,
+				author INTEGER,
+				lang_name VARCHAR,
+				translation VARCHAR,
+				added DATE
+			)
+		""")
+
+	hello_world = list(hw_conn.execute('SELECT lang_name, translation FROM langs'))
+except sqlite3.OperationalError:
+	# TODO: Is that that a good idea? [normal]
+	# → ① It's very rare,
+	# → ② the content wont even be the same!
+	# 	→ But at least we serve some content ☺
+	#	→ So maybe, then, we should at least warn the user that this happenned!
+	#	→ Eg: "Warning! We couldn't access database, you are seing alternative content!" … kind of.
+	logging.warning("Cannot open database! → Accessing text file instead.")
+
+	try:
+		# TODO: Wont this implicitely call ".read()" when we iter over it? ([minor]? or normal)
+		# See tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
+
+		# Then, if so, it shouldn't be let paremeter-less, right?
+		# → Check the opener parameter of http://docs.python.org/3.3/library/functions.html#open
+		# → Also opened an issue on GitHub with more info: https://github.com/JeromeJ/Devutopia/issues/1
+
+		# TODO: Also find a way to embed that into a "with" block as it should? [normal]
+
+		hello_world = open('data/helloworld.txt', encoding="utf-8")
+	except OSError:
+		# TODO: Try to create the file? [minor]
+		# Maybe only try to create it when needed?  # On saving?
+
+		hello_world = []  # Default value
+		logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.")
 
 # TODO: Improve the moto by making it more accesible? ([normal]? or minor)
 # → Make it more accessible to the man in the street? (dat idiom though… Hope it's the right one. I meant "monsieur/madame tout le monde")
@@ -284,14 +308,12 @@ moto = [
 # TODO: Hey, should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
 # TODO: Why 4096 if not "why not?"? [minor]
 template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
-	# Cannot use 'expr if hello_world else "No lang registered yet"' because hello_world returns True (as it is a generator)
+	# Cannot use 'expr if hello_world else "No translations registered yet"' because hello_world returns True (as it is a generator)
 	# Even if it will not yield anything (which was confusing at first but totaly normal).
 	# → Using the "or" trick instead.
-	langs='\n'.join(
-		'<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(
-			*cgi.escape(line[:-1]).split(None, 1))
-		for line in hello_world)  # CODE ID: tag:devutopia.net,2013-11-03:Probably-implicitely-calling-read-without-parameter
-	or "<em>No lang registered yet!</em><br />",
+	langs='\n'.join('<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(*lang)
+						for lang in hello_world)
+			or "<em>No translations registered yet!</em><br />",
 
 	moto='<li>' + '</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto) + '</li>')
 
