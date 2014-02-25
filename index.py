@@ -370,6 +370,7 @@ template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(40
 def make_external(url):
 	return urljoin(request.url_root, url)
 
+# TODO: Get rid o' that. Currently kept while upgrading the RSS. [normal]
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -385,6 +386,7 @@ rss_template = """\
 </feed>\
 """
 
+# TODO: Get rid o' that. Currently kept while upgrading the RSS. [normal]
 # TODO: Also make so that, if {msg} has more than one line, then it automatically becomes a block [normal]
 # COMMENT ID: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting
 rss_item = """\
@@ -445,11 +447,8 @@ def index():
 	# → [ important ] (seems already too strong),
 	# → [ critic ] (Erm, if there is something critic, shouldn't it be fixed immediately? ;D and so, this tag shouldn't be used often ^^)
 
-	# Not used
-	if False and 'RSS' in map(operator.methodcaller('upper'), self.args['do']):  # TODO: Use NotStrictList class [normal]
-		# TODO: See tag:devutopia.net,2013-12-05:editing-content-type-would-automatically-update-charset [normal]
-		self.http.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
-
+	# Not used # TODO: Get rid o' that. Currently kept while upgrading the RSS. [normal]
+	if False and 'RSS' in map(operator.methodcaller('upper'), self.args['do']):
 		yield BetterFormat().format(
 			 rss_template,
 			 **{
