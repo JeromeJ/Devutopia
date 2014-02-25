@@ -19,10 +19,10 @@ import cgi
 import collections
 import datetime
 import logging  # TODO: Change the format of logging so that it includes the date [minor]
-# import operator  # Not used
+import operator
 import os
 import re
-import sqlite3  # Not used
+import sqlite3
 import string
 import sys
 import time
@@ -264,6 +264,8 @@ try:
 		""")
 
 	hello_world = list(hw_conn.execute('SELECT lang_name, translation FROM langs'))
+
+	# raise sqlite3.OperationalError
 except sqlite3.OperationalError:
 	# TODO: Is that that a good idea? [normal]
 	# → ① It's very rare,
@@ -290,6 +292,8 @@ except sqlite3.OperationalError:
 
 		hello_world = []  # Default value
 		logging.warning("data/helloworld.txt NOT FOUND! → Creating an empty list.")
+	else:
+		hello_world = map(operator.methodcaller('split', None, 1), hello_world)
 
 # TODO: Improve the moto by making it more accesible? ([normal]? or minor)
 # → Make it more accessible to the man in the street? (dat idiom though… Hope it's the right one. I meant "monsieur/madame tout le monde")
@@ -308,12 +312,12 @@ moto = [
 # TODO: Hey, should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
 # TODO: Why 4096 if not "why not?"? [minor]
 template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
-	# Cannot use 'expr if hello_world else "No translations registered yet"' because hello_world returns True (as it is a generator)
+	# Cannot use 'expr if hello_world else "No translation registered yet"' because hello_world returns True (as it is a generator)
 	# Even if it will not yield anything (which was confusing at first but totaly normal).
 	# → Using the "or" trick instead.
 	langs='\n'.join('<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(*lang)
 						for lang in hello_world)
-			or "<em>No translations registered yet!</em><br />",
+			or "<em>No translation registered yet!</em><br />",
 
 	moto='<li>' + '</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto) + '</li>')
 
