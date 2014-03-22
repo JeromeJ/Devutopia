@@ -38,10 +38,8 @@ from flask import Flask, request, Response, stream_with_context  # TODO: Upgrade
 from urllib.parse import urljoin
 from werkzeug.contrib.atom import AtomFeed
 
-# TODO: Make an offical address (*@devutopia.net) [normal]
+# TODO: Make an offical address (*@devutopia.net) if possible [normal]
 # COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
-
-# TODO: Make the email address being put dynamically in the .tpl (instead of being hardcoded) [normal]
 
 __author__ = "JeromeJ"
 __contact__ = "devutopia.devs [this would be an amphora symbol but we don't like spambots] olissea.net"
@@ -312,6 +310,7 @@ moto = [
 # TODO: Hey, should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
 # TODO: Why 4096 if not "why not?"? [minor]
 template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
+	contact=re.sub('\[[^\]]+\]', '[at symbol]', __contact__),
 	# Cannot use 'expr if hello_world else "No translation registered yet"' because hello_world returns True (as it is a generator)
 	# Even if it will not yield anything (which was confusing at first but totaly normal).
 	# → Using the "or" trick instead.
@@ -407,12 +406,10 @@ rss_item = """\
 # RSS
 @app.route('/helloworld.atom')
 def helloworld_atom():
-	feed = AtomFeed('Hello World', feed_url=request.url, url=request.url_root, id=Tag('2013-09-22', 'helloworldfeed'))
-
-	hello_world = open('data/helloworld.txt', encoding="utf-8")  # TODO: Couldn't use helloworld because it was exhausted. Build it once instead. [normal]
+	feed = AtomFeed('Hello World', feed_url=request.url, url=request.url_root, id=Tag('2013-09-22', 'helloworldfeed'), subtitle='Hello World in many languages!')
 
 	for i, line in enumerate(hello_world):
-		lang_code, helloworld_translated = line[:-1].split(None, 1)
+		lang_code, helloworld_translated = line
 		feed.add('Hello World in {}'.format(cgi.escape(lang_code)),
 			helloworld_translated,
 			content_type='html',

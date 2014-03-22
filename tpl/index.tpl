@@ -8,7 +8,7 @@
 	<body>
 		<header id="header">
 			<div id="status"><strong><span class="WIP">WIP</span> Work In Progress</strong>, <em>come back later!</em></div><!-- # TODO: Remove that? When? [minor] -->
-			<div id="extra"><em>Contact us if interested!</em><br /><strong>Contact:</strong> devutopia.devs [at symbol] olissea.net</div><!-- # TODO: See tag:devutopia.net,2013-11-03:Topic-changing-contact-info (in helloworld.py) [minor] -->
+			<div id="extra"><em>Contact us if interested!</em><br /><strong>Contact:</strong> {contact}</div><!-- # TODO: See tag:devutopia.net,2013-11-03:Topic-changing-contact-info (in helloworld.py) [minor] -->
 			<div id="title"><strong><span class="dev">Dev</span><span class="utopia">utopia</span></strong></div>
 		</header>
 
