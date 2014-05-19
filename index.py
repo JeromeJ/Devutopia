@@ -61,12 +61,22 @@ application = app
 
 # Decorator to make Flask accept generators
 
-
+# app.route is a decorator with parameter…
 @wraps(app.route)
 def route_accept_generators(*args, **kwargs):
+	# So we first call the original app.route (that we stored into this function to save place)
+	# and call it to receive our decorator
+
 	route = route_accept_generators.app_route(*args, **kwargs)  # Getting our route decorator.
 
-	# Decorating it.
+	# At this point we have our traditional app.route('/myRoute/')
+	# Next, app.route('/myRoute/')(f) will happen
+	# But app.route('/myRoute/'), who will call f(), doesn't like when f return a generator.
+	# If one want to return a generator, he has to use Response(stream_with_context(r))
+	# So we'll decorate app.route('/myRoute/') so that it will decorate f, so that, when called, it will always return a valid value
+	# i.e. not a generator or Response(stream_with_contect(gen))
+
+	# Decorating the decorator so that it also accepts generator.
 	@wraps(route)
 	def decorated(f):
 
@@ -81,6 +91,7 @@ def route_accept_generators(*args, **kwargs):
 
 			return r
 
+		# Would have normally just return route(f)
 		return route(function_accept_generators)
 
 	return decorated
@@ -88,6 +99,7 @@ def route_accept_generators(*args, **kwargs):
 # Store the function so that it doesn't make an infinite recursion call
 # Because accessing from app.route rather than directly)
 # And storing it in itself instead of creating another standalone variable
+# TODO: Should I use a class decorator instead then? ([minor] ?)
 route_accept_generators.app_route = app.route
 
 app.route = route_accept_generators
@@ -108,6 +120,7 @@ except NameError:
 instance_name = str(uuid.uuid4())
 
 
+# TODO: Must inherit object?? Isn't it only in Python2 that we do that?? [minor]
 class cached_property(object):
 	"""
 	A read-only @property that is only evaluated once. The value is cached
@@ -408,15 +421,19 @@ rss_item = """\
 def helloworld_atom():
 	feed = AtomFeed('Hello World', feed_url=request.url, url=request.url_root, id=Tag('2013-09-22', 'helloworldfeed'), subtitle='Hello World in many languages!')
 
+	l_escape = cgi.escape  # Optimization
+	l_make_external = make_external  # Optimization
+	l_date = datetime.datetime  # Optimization
+
 	for i, line in enumerate(hello_world):
 		lang_code, helloworld_translated = line
-		feed.add('Hello World in {}'.format(cgi.escape(lang_code)),
+		feed.add('Hello World in {}'.format(l_escape(lang_code)),
 			helloworld_translated,
 			content_type='html',
 			author='Devutopia',
-			url=make_external('helloworld/entry.id.{}'.format(i)),
-			updated=datetime.datetime(2014, 1, 5, 20, 12),
-			published=datetime.datetime(2014, 1, 5, 20, 12),
+			url=l_make_external('helloworld/entry.id.{}'.format(i)),
+			updated=l_date(2014, 1, 5, 20, 12),
+			published=l_date(2014, 1, 5, 20, 12),
 		)
 	return feed.get_response()
 
@@ -479,6 +496,8 @@ def index():
 	# # Some junk :) ([fr] "syllogomanie"; [en] "compulsive hoarding")
 	# yield __import__('sys').version+'<br />'
 	# yield __import__('sqlite3').dbapi2.sqlite_version # → Not the one I would have hoped for (but not required anyway)
+
+	# TODO: Should I put time.mktime and datetime.datetime into local variables? (that's not that a big matter, isn't it?)  [minor]
 
 	hours = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / (60 * 60))
 	minutes = int((time.mktime(datetime.datetime.now().timetuple()) - time.mktime(started_on.timetuple())) / 60) - hours * 60
