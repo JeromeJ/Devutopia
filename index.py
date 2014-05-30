@@ -15,9 +15,9 @@ but the goal is to make it really decentralized later. For now, we'd like a quic
 to bring a decentralized-like plateform for everybody and every type of content.
 """
 
-import cgi
 import collections
 import datetime
+import html
 import logging  # TODO: Change the format of logging so that it includes the date [minor]
 import operator
 import os
@@ -241,7 +241,7 @@ class DynamicMapping(dict):
 
 	def __getitem__(self, key):
 		if self.safe:
-			return cgi.escape(super().__getitem__(key))
+			return html.escape(super().__getitem__(key))
 
 		return super().__getitem__(key)
 
@@ -249,7 +249,7 @@ class DynamicMapping(dict):
 		if self.strict:
 			return super().__missing__(key)
 
-		return '{' + cgi.escape(key) + '}'
+		return '{' + html.escape(key) + '}'
 
 
 started_on = datetime.datetime.now()
@@ -421,7 +421,7 @@ rss_item = """\
 def helloworld_atom():
 	feed = AtomFeed('Hello World', feed_url=request.url, url=request.url_root, id=Tag('2013-09-22', 'helloworldfeed'), subtitle='Hello World in many languages!')
 
-	l_escape = cgi.escape  # Optimization
+	l_escape = html.escape  # Optimization
 	l_make_external = make_external  # Optimization
 	l_date = datetime.datetime  # Optimization
 
@@ -506,20 +506,20 @@ def index():
 
 	yield BetterFormat().format(template,
 		# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
-		# test=test.format(get=cgi.escape(str(self.args)), post=cgi.escape(str(self.post)), method=cgi.escape(self.environ["REQUEST_METHOD"])),
+		# test=test.format(get=html.escape(str(self.args)), post=html.escape(str(self.post)), method=html.escape(self.environ["REQUEST_METHOD"])),
 		# test='Nothing to see here 😒', # Don't delete me :p I'm a fancy smiley and I don't want to disappear, let me be!
 		# TODO: Should be put in the test variable? (helloworld.py scope) [minor]
 
 		# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting ) [normal]
 		test='<b>Instance name:</b> {name}<br /><b>Started {hours}{minutes}{seconds} ago.</b>'.format(
-			name=cgi.escape(instance_name),
+			name=html.escape(instance_name),
 			hours='{} hour{} '.format(hours, 's' * (hours >1)) if hours else '',
 			minutes='{} minute{} '.format(minutes, 's' * (minutes > 1)) if minutes or hours else '',
 			seconds='{} second{}'.format(seconds, 's' * (seconds > 1)),
 		)
 	)
 	# TODO: See tag:devutopia.net,2013-12-05:junkomania-handling [normal]
-	# +'<br /><strong>Environ:</strong>'+cgi.escape(str(self.environ)).replace(',', ',<br />\n'),
+	# +'<br /><strong>Environ:</strong>'+html.escape(str(self.environ)).replace(',', ',<br />\n'),
 
 
 class OLDWSGI:
