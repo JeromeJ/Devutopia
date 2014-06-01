@@ -38,6 +38,11 @@ from flask import Flask, request, Response, stream_with_context  # TODO: Upgrade
 from urllib.parse import urljoin
 from werkzeug.contrib.atom import AtomFeed
 
+try:
+	import names
+except ImportError:
+	names = None
+
 # TODO: Make an offical address (*@devutopia.net) if possible [normal]
 # COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
 
@@ -117,7 +122,7 @@ except NameError:
 	pass
 
 
-instance_name = str(uuid.uuid4())
+instance_name = '{} (<strong>UUID:</strong> {})'.format(html.escape(names.get_full_name()), html.escape(str(uuid.uuid4()))) if names else str(uuid.uuid4())
 
 
 # TODO: Must inherit object?? Isn't it only in Python2 that we do that?? [minor]
@@ -512,7 +517,7 @@ def index():
 
 		# TODO: Should also automatically forms a block, right? (See: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting ) [normal]
 		test='<b>Instance name:</b> {name}<br /><b>Started {hours}{minutes}{seconds} ago.</b>'.format(
-			name=html.escape(instance_name),
+			name=instance_name,
 			hours='{} hour{} '.format(hours, 's' * (hours >1)) if hours else '',
 			minutes='{} minute{} '.format(minutes, 's' * (minutes > 1)) if minutes or hours else '',
 			seconds='{} second{}'.format(seconds, 's' * (seconds > 1)),
