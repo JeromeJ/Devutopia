@@ -34,8 +34,10 @@ from functools import wraps
 
 sys.path.append('/usr/local/lib/python3.3/dist-packages/')
 
-from flask import Flask, request, Response, stream_with_context  # TODO: Upgrade to Flask [important] (Status: Started)
 from urllib.parse import urljoin
+
+# TODO: Upgrade to Flask [important] (Status: Started)
+from flask import Flask, request, Response, stream_with_context
 from werkzeug.contrib.atom import AtomFeed
 
 try:
@@ -58,7 +60,8 @@ __licence__ = "Copy left: Share-alike"
 #
 # aptitude install python3-pip
 # pip3 install flask
-# echo "export PYTHONPATH=/usr/local/lib/python3.3/dist-packages/" >> .bashrc # May differ on your system! (May be improved too)
+# # May differ on your system! (May be improved too)
+# echo "export PYTHONPATH=/usr/local/lib/python3.3/dist-packages/" >> .bashrc
 # # Alternative: sys.path.append('/usr/local/lib/python3.3/dist-packages/')
 
 app = Flask(__name__)
