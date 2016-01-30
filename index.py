@@ -128,17 +128,21 @@ except NameError:
 	pass
 
 
-instance_name = '{} (<strong>UUID:</strong> {})'.format(html.escape(names.get_full_name()), html.escape(str(uuid.uuid4()))) if names else str(uuid.uuid4())
+instance_name = '{} (<strong>UUID:</strong> {})'.format(
+		html.escape(names.get_full_name()),
+		html.escape(str(uuid.uuid4()))
+	) if names else str(uuid.uuid4())
 
-# TODO: Must inherit object?? Isn't it only in Python2 that we do that?? [minor]
+# TODO: Must inherit object? Isn't it only in Python2 that it is required? [minor]
 class cached_property(object):
 	"""
 	A read-only @property that is only evaluated once. The value is cached
 	on the object itself rather than the function or class; this should prevent
 	memory leakage.
 	"""
-
-	# Source: http://www.toofishes.net/blog/python-cached-property-decorator/  # TODO: Should it be a metada? (like __source__) [minor]
+	
+	# TODO: Should the source be a metada? (like __source__) [minor]
+	# Source: http://www.toofishes.net/blog/python-cached-property-decorator/
 
 	# This decorator allows to create properties that get properly generated only when accessed
 	# for the first time (without requiring to create a dynamic property that would have to check
@@ -160,7 +164,7 @@ class cached_property(object):
 # TODO: Question: Couldn't it use @staticmethod instead? [normal]
 class BetterFormat(string.Formatter):
 	"""
-	Introduce better formattings.
+	Introduce better formatting.
 
 	Currently, it allows to automatically indent a block of text according to its current depth of identation.
 	"""
@@ -316,9 +320,8 @@ except sqlite3.OperationalError:
 	else:
 		hello_world = map(operator.methodcaller('split', None, 1), hello_world)
 
-# TODO: Improve the moto by making it more accesible? ([normal]? or minor)
-# → Make it more accessible to the man in the street? (dat idiom though… Hope it's the right one. I meant "monsieur/madame tout le monde")
-# And let geeky explanations available for geeks (but as extra info. It shouldn't come confuse everyday ppl (valid alternative of "dat idiom"?))
+# TODO: Make the moto easier to understand for the average Joe. [minor] or normal?
+# But let geeky explanations available for the people who are interested to know (but as extra info only = Make sure it isn't there to confuse everyday ppl)
 
 moto = [
 	("Bring the advantages of programming's world decentralized systems (like git, …) to the whole world.",),
@@ -330,7 +333,7 @@ moto = [
 		"This project is YOURS. Bring your ideas, opinions, code, content, …"),
 ]
 
-# TODO: Hey, should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
+# TODO: Should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
 # TODO: Why 4096 if not "why not?"? [minor]
 template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
 	contact=re.sub('\[[^\]]+\]', '[at symbol]', __contact__),
@@ -392,7 +395,7 @@ template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(40
 def make_external(url):
 	return urljoin(request.url_root, url)
 
-# TODO: Get rid o' that. Currently kept while upgrading the RSS. [normal]
+# TODO: Get rid of this. Currently kept while upgrading the RSS. [normal]
 rss_template = """\
 <?xml version="1.0" encoding="utf-8" ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -408,7 +411,7 @@ rss_template = """\
 </feed>\
 """
 
-# TODO: Get rid o' that. Currently kept while upgrading the RSS. [normal]
+# TODO: Get rid of this. Currently kept while upgrading the RSS. [normal]
 # TODO: Also make so that, if {msg} has more than one line, then it automatically becomes a block [normal]
 # COMMENT ID: tag:devutopia.net,2013-10-05:Improve-auto-identation-formatting
 rss_item = """\
@@ -450,7 +453,9 @@ def helloworld_atom():
 @app.after_request
 def after_request(response):
 	# Remove the display of the full version of Werkzeug and Python.
-	response.headers.add('Server', 'Werkzeug Python 3')  # TODO: Should we consider removing it completly or is it good enough? [minor]
+	# TODO: Should we consider removing it completly or is it good enough? [minor]
+	# Note: This is both about "security" by "hiding" but also about advertising the server used as a 'thanks'.
+	response.headers.add('Server', 'Werkzeug Python 3')
 	return response
 
 @app.route('/')
@@ -597,7 +602,7 @@ if __name__ == '__main__':
 	# Answer: "If you want to serve multiple applications on a single host and port, you should create a WSGI application that parses PATH_INFO to select which application to invoke for each request. (E.g., using the shift_path_info() function from wsgiref.util.)"
 
 	# TODO: Improve the logging of errors and all with Flask [important]
-	# Currently showing everything with debug on or not showing anything at all -.-'
+	# Currently showing everything with debug on or not showing anything at all, which sucks.
 	app.debug = False
 
 	# TODO: Apparently, when debug is enabled, the server asks for those info twice. Why? Does it create two instances because of input? [normal]
@@ -607,4 +612,4 @@ if __name__ == '__main__':
 	try:
 		app.run(addr or 'devutopia.net', int(port or 80))
 	except KeyboardInterrupt:
-		print('Shuting down... Good bye!')  # Can't use "…" in case of Windows, because Windows is stupid. I said it. UTF-8 isn't yet handle by everyone in 2013… That's sad, isn't it? (Or you can "modify" the Windows environnement but it's not a good idea and not perfect)
+		print('Shuting down... Good bye!')  # Can't use "…" in case of Windows, because Windows still doesn't handle UTF-8… I know right? (Unless you modify the font used in the Windows console but this isn't perfect nor ideal)
