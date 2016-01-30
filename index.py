@@ -69,48 +69,51 @@ application = app
 
 # Decorator to make Flask accept generators
 
-# app.route is a decorator with parameter…
-@wraps(app.route)
-def route_accept_generators(*args, **kwargs):
-	# So we first call the original app.route (that we stored into this function to save place)
-	# and call it to receive our decorator
-
-	route = route_accept_generators.app_route(*args, **kwargs)  # Getting our route decorator.
-
-	# At this point we have our traditional app.route('/myRoute/')
-	# Next, app.route('/myRoute/')(f) will happen
-	# But app.route('/myRoute/'), who will call f(), doesn't like when f return a generator.
-	# If one want to return a generator, he has to use Response(stream_with_context(r))
-	# So we'll decorate app.route('/myRoute/') so that it will decorate f, so that, when called, it will always return a valid value
-	# i.e. not a generator or Response(stream_with_contect(gen))
-
-	# Decorating the decorator so that it also accepts generator.
+def route_accept_generators(route):
 	@wraps(route)
-	def decorated(f):
+	def new_app_route(*args, **kwargs):
+		# So we first call the original app.route (that we stored into this function to save place)
+		# and call it to receive our decorator
+		
+		# At this point we have our traditional app.route('/myRoute/')
+		app_route = route(*args, **kwargs)
+		
+		# Next, app.route('/myRoute/')(f) will happen (which will decorate our function).
+		
+		# /!\ BUT app.route('/myRoute/'), which will call f(), doesn't like when f return a generator!!
+		
+		# In order to be able to return a generator,
+		# the function needs to call Response(stream_with_context(r))
+		
+		# So we are decorating app.route('/myRoute/') so that it will decorate f, so that when f is called, it will always return a valid value.
+		# i.e. not a generator or Response(stream_with_context(gen))
 
-		# Make so that the function that will be called return a valid Flask answer in case of returning a generator.
-		@wraps(f)
-		def function_accept_generators(*args, **kwargs):
-			r = f(*args, **kwargs)
+		# Decorating app.route('/myRoute/') so it decorates f.
+		@wraps(app_route)
+		def decorated(f):
 
-			if isinstance(r, types.GeneratorType):
-				# return Response(r, direct_passthrough=True)  # Solution proposed here: http://flask.pocoo.org/mailinglist/archive/2010/11/3/using-yield/#478b0c1829b5263700da1db7d2d22c79
-				return Response(stream_with_context(r))  # Solution found here: http://stackoverflow.com/q/13386681/1524913
+			# Make so that f returns a valid Flask answer (generator aren't accepted as is)
+			@wraps(f)
+			def function_accept_generators(*args, **kwargs):
+				r = f(*args, **kwargs)
 
-			return r
+				if isinstance(r, types.GeneratorType):
+					# # Solution proposed here: http://flask.pocoo.org/mailinglist/archive/2010/11/3/using-yield/
+					# return Response(r, direct_passthrough=True)
+					
+					# Solution found here: http://stackoverflow.com/q/13386681/1524913
+					return Response(stream_with_context(r))
 
-		# Would have normally just return route(f)
-		return route(function_accept_generators)
+				return r
 
-	return decorated
+			# Would have normally just been "return route(f)"
+			return app_route(function_accept_generators)  # Now normally decorating the modified f
 
-# Store the function so that it doesn't make an infinite recursion call
-# Because accessing from app.route rather than directly)
-# And storing it in itself instead of creating another standalone variable
-# TODO: Should I use a class decorator instead then? ([minor] ?)
-route_accept_generators.app_route = app.route
+		return decorated
+	
+	return new_app_route
 
-app.route = route_accept_generators
+app.route = route_accept_generators(app.route)
 
 try:
 	# Uniformisation
@@ -126,7 +129,6 @@ except NameError:
 
 
 instance_name = '{} (<strong>UUID:</strong> {})'.format(html.escape(names.get_full_name()), html.escape(str(uuid.uuid4()))) if names else str(uuid.uuid4())
-
 
 # TODO: Must inherit object?? Isn't it only in Python2 that we do that?? [minor]
 class cached_property(object):
