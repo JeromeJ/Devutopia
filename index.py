@@ -44,6 +44,7 @@ try:
 	import names
 except ImportError:
 	names = None
+	logging.warning('names not found. Install with pip install names.')
 
 # TODO: Make an offical address (*@devutopia.net) if possible [normal]
 # COMMENT ID: tag:devutopia.net,2013-11-03:Topic-changing-contact-info
@@ -126,7 +127,6 @@ except NameError:
 	# "__file__" is not always defined, notably when running through interactive shell for instance.
 
 	pass
-
 
 instance_name = '{} (<strong>UUID:</strong> {})'.format(
 		html.escape(names.get_full_name()),
@@ -333,18 +333,25 @@ moto = [
 		"This project is YOURS. Bring your ideas, opinions, code, content, …"),
 ]
 
-# TODO: Should/could we setup open as 'open = functools.partial(open, encoding="utf-8")' "as it should be"? ([normal]: Talking about the question)
-# TODO: Why 4096 if not "why not?"? [minor]
-template = BetterFormat().format(open('tpl/index.tpl', encoding="utf-8").read(4096),
+# TODO: Should we setup open as 'open = functools.partial(open, encoding="utf-8")' as it should be? [normal]
+template = BetterFormat().format(
+	# TODO: Why 4096? Or why not? [minor]
+	open('tpl/index.tpl', encoding="utf-8").read(4096),  # TODO: Catch if template not found
+	
 	contact=re.sub('\[[^\]]+\]', '[at symbol]', __contact__),
-	# Cannot use 'expr if hello_world else "No translation registered yet"' because hello_world returns True (as it is a generator)
+	# Cannot use 'expr if hello_world else "No translation registered yet"'
+	# because hello_world returns True (as it is a generator).
 	# Even if it will not yield anything (which was confusing at first but totaly normal).
 	# → Using the "or" trick instead.
-	langs='\n'.join('<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(*lang)
-						for lang in hello_world)
-			or "<em>No translation registered yet!</em><br />",
+	
+	langs='\n'.join(
+		'<span class="lang">({})</span> <bdi>{}</bdi> ☺<br />'.format(*lang)
+		for lang in hello_world
+	)
+	or "<em>There is no translation to be displayed yet!</em><br />",
 
-	moto='<li>' + '</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto) + '</li>')
+	moto='<li>' + '</li>\n<li>'.join('<br />\n'.join(rule) for rule in moto) + '</li>'
+)
 
 # # Not used
 # test = """\
